@@ -1,0 +1,16 @@
+import { PageHeroPlacement } from "@prisma/client";
+
+/** Labels must match GET /api/admin/media usage enrichment. */
+export const PAGE_HERO_USAGE_LABEL: Record<PageHeroPlacement, string> = {
+  PORTFOLIO_HERO: "Page hero — Galleries (/portfolio)",
+  SERVICES_HERO: "Page hero — Services (/services)",
+  ABOUT_HERO: "Page hero — Studio (/about)",
+  CONTACT_HERO: "Page hero — Enquire (/contact)",
+};
+
+export function pageHeroUsageLine(placement: PageHeroPlacement, role: "image" | "video"): string {
+  return `${PAGE_HERO_USAGE_LABEL[placement]} · ${role}`;
+}
+
+export const HOME_HERO_IMAGE_USAGE = "Home hero — image background";
+export const HOME_HERO_VIDEO_USAGE = "Home hero — video background";

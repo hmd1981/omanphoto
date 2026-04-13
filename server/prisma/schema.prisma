@@ -1,0 +1,185 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../../app/node_modules/.prisma/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+enum MediaType {
+  IMAGE
+  VIDEO
+}
+
+model Category {
+  id            String   @id @default(cuid())
+  nameEn        String
+  nameAr        String
+  slug          String   @unique
+  descriptionEn String?  @db.Text
+  descriptionAr String?  @db.Text
+  sortOrder     Int      @default(0)
+  published     Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  media         Media[]
+}
+
+model Media {
+  id         String    @id @default(cuid())
+  titleEn    String
+  titleAr    String
+  type       MediaType
+  filePath   String?
+  url        String?
+  categoryId String?
+  category   Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  sortOrder  Int       @default(0)
+  active     Boolean   @default(true)
+  featured   Boolean   @default(false)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  heroAsImage HeroSettings? @relation("HeroImageMedia")
+  heroAsVideo HeroSettings? @relation("HeroVideoMedia")
+  pageHeroImageSlots PageHeroMedia[] @relation("PageHeroImageMedia")
+  pageHeroVideoSlots PageHeroMedia[] @relation("PageHeroVideoMedia")
+}
+
+enum PageHeroPlacement {
+  PORTFOLIO_HERO
+  SERVICES_HERO
+  ABOUT_HERO
+  CONTACT_HERO
+}
+
+/** Per-page top hero media (Work / Services / Studio / Enquire). */
+model PageHeroMedia {
+  id           String             @id @default(cuid())
+  placement    PageHeroPlacement  @unique
+  active       Boolean            @default(true)
+  sortOrder    Int                @default(0)
+  mediaType    MediaType          @default(IMAGE)
+  imageMediaId String?
+  imageMedia   Media?             @relation("PageHeroImageMedia", fields: [imageMediaId], references: [id], onDelete: SetNull)
+  videoMediaId String?
+  videoMedia   Media?             @relation("PageHeroVideoMedia", fields: [videoMediaId], references: [id], onDelete: SetNull)
+  videoUrl     String?
+  updatedAt    DateTime           @updatedAt
+}
+
+model HeroSettings {
+  id                String    @id @default("singleton")
+  mediaType         MediaType @default(IMAGE)
+  imageMediaId      String?   @unique
+  imageMedia        Media?    @relation("HeroImageMedia", fields: [imageMediaId], references: [id], onDelete: SetNull)
+  videoMediaId      String?   @unique
+  videoMedia        Media?    @relation("HeroVideoMedia", fields: [videoMediaId], references: [id], onDelete: SetNull)
+  videoUrl          String?
+  eyebrowEn         String?
+  eyebrowAr         String?
+  overlayTitleEn    String?
+  overlayTitleAr    String?
+  overlaySubtitleEn String?
+  overlaySubtitleAr String?
+  ctaLabelEn        String?
+  ctaLabelAr        String?
+  ctaHref           String?
+  updatedAt         DateTime  @updatedAt
+}
+
+model Service {
+  id            String   @id @default(cuid())
+  titleEn       String
+  titleAr       String
+  slug          String   @unique
+  descriptionEn String   @db.Text
+  descriptionAr String   @db.Text
+  sortOrder     Int      @default(0)
+  published     Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model PageContent {
+  id         String   @id @default(cuid())
+  pageKey    String
+  sectionKey String
+  titleEn    String?
+  titleAr    String?
+  bodyEn     String?  @db.Text
+  bodyAr     String?  @db.Text
+  published  Boolean  @default(true)
+  sortOrder  Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([pageKey, sectionKey])
+}
+
+model SiteSettings {
+  id                       String   @id @default("singleton")
+  brandName                String     @default("Oman Photo")
+  footerTaglineEn          String?    @db.Text
+  footerTaglineAr          String?    @db.Text
+  footerEmail              String?
+  footerPhone              String?
+  instagramUrl             String?
+  whatsappUrl              String?
+  /** iframe src — use Google Maps embed output (maps.google.com/...output=embed) */
+  mapEmbedUrl              String?    @db.Text
+  /** “Open in Google Maps” link (e.g. maps.app.goo.gl short URL) */
+  mapPageUrl               String?    @db.Text
+  footerLocationLine       String?
+  footerBookLabelEn        String     @default("Book a session")
+  footerBookLabelAr        String     @default("احجز جلسة")
+  copyrightName            String     @default("Oman Photo")
+  heroEyebrowEn            String?
+  heroEyebrowAr            String?
+  navHomeEn                String     @default("Home")
+  navHomeAr                String     @default("الرئيسية")
+  navPortfolioEn           String     @default("Galleries")
+  navPortfolioAr           String     @default("المعارض")
+  navServicesEn            String     @default("Services")
+  navServicesAr            String     @default("الخدمات")
+  navAboutEn               String     @default("About")
+  navAboutAr               String     @default("من نحن")
+  navContactEn             String     @default("Contact")
+  navContactAr             String     @default("تواصل")
+  navMenuLabelEn           String     @default("Menu")
+  navMenuLabelAr           String     @default("القائمة")
+  defaultMetaTitleEn       String?
+  defaultMetaTitleAr       String?
+  defaultMetaDescriptionEn String?    @db.Text
+  defaultMetaDescriptionAr String?    @db.Text
+  updatedAt                DateTime   @updatedAt
+}
+
+enum InquiryStatus {
+  NEW
+  READ
+  ARCHIVED
+}
+
+model ContactInquiry {
+  id        String         @id @default(cuid())
+  locale    String?
+  name      String
+  phone     String
+  email     String
+  service   String?
+  eventDate DateTime?
+  message   String         @db.Text
+  status    InquiryStatus  @default(NEW)
+  createdAt DateTime       @default(now())
+}

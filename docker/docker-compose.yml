@@ -1,0 +1,48 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: omanphoto
+      POSTGRES_PASSWORD: omanphoto_dev
+      POSTGRES_DB: omanphoto
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U omanphoto -d omanphoto"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  web:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    restart: unless-stopped
+    # Bind to localhost only — public access via Nginx on 80/443
+    ports:
+      - "127.0.0.1:3000:3000"
+    environment:
+      DATABASE_URL: postgresql://omanphoto:omanphoto_dev@db:5432/omanphoto?schema=public
+      JWT_SECRET: ${JWT_SECRET:-please-set-jwt-secret-in-production-min-32-chars}
+      # Initial admin password when the DB is empty and seed runs (change after first login in production)
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin}
+      # Session cookie: app uses non-Secure cookies when NEXT_PUBLIC_SITE_URL is http:// (required for HTTP / Docker).
+      # Behind HTTPS with NEXT_PUBLIC_SITE_URL=https://..., set SESSION_COOKIE_SECURE=true if needed.
+      # Public site URL (cookies, absolute links). On this server use https://omanphoto.com
+      NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-https://omanphoto.com}
+      NEXT_PUBLIC_WHATSAPP_E164: ${NEXT_PUBLIC_WHATSAPP_E164:-96890000000}
+      NEXT_PUBLIC_INSTAGRAM_HANDLE: ${NEXT_PUBLIC_INSTAGRAM_HANDLE:-omanphoto}
+      UPLOAD_DIR: /opt/omanphoto/uploads
+      NODE_ENV: production
+    volumes:
+      - uploads:/opt/omanphoto/uploads
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pgdata:
+  uploads:

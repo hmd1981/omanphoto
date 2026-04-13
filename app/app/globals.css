@@ -1,0 +1,76 @@
+@import "tailwindcss";
+
+:root {
+  --paper: #050505;
+  --ink: #c8c3b8;
+  --ink-bright: #dedad0;
+  --ink-muted: #8a857c;
+  --muted: #6e6a62;
+  --muted-soft: #4a4740;
+  --surface: #0c0c0a;
+  --line: #181816;
+  --line-bright: #252523;
+  --ease-editorial: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+html[dir="rtl"] {
+  /* No RTL-specific overrides needed without ambient effects */
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-ink: var(--ink);
+  --color-ink-bright: var(--ink-bright);
+  --color-ink-muted: var(--ink-muted);
+  --color-muted: var(--muted);
+  --color-muted-soft: var(--muted-soft);
+  --color-surface: var(--surface);
+  --color-line: var(--line);
+  --font-serif: var(--font-cormorant);
+  --font-sans: var(--font-dm-sans);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-dm-sans), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+html[dir="rtl"] body {
+  font-family: var(--font-noto-arabic), var(--font-dm-sans), system-ui, sans-serif;
+  font-feature-settings: "kern" 1;
+  letter-spacing: normal;
+}
+
+.font-display {
+  font-family: var(--font-cormorant), ui-serif, Georgia, serif;
+  font-feature-settings: "kern" 1, "liga" 1;
+}
+
+html[dir="rtl"] .font-display {
+  font-family: var(--font-noto-arabic), var(--font-cormorant), ui-serif, Georgia, serif;
+}
+
+.editorial-section {
+  @apply mx-auto max-w-7xl px-6 md:px-10;
+}
+
+.editorial-prose {
+  @apply max-w-[52ch] text-ink-muted;
+}
+
+::selection {
+  background: rgb(222 218 208 / 0.25);
+  color: var(--ink-bright);
+}
+
+.focus-ring:focus-visible {
+  outline: 1px solid rgb(222 218 208 / 0.35);
+  outline-offset: 4px;
+}

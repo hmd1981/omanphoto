@@ -1,0 +1,5 @@
+{
+  "name": "omanphoto",
+  "private": true,
+  "description": "Monorepo root placeholder so Prisma schema in server/ resolves without auto-installing into the wrong directory."
+}
