@@ -31,19 +31,22 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
             </Link>
             <span className="text-xs uppercase tracking-[0.25em] text-muted">Administration</span>
           </div>
-          <div className="flex flex-wrap items-center gap-4">
+          <nav
+            aria-label="Admin and public shortcuts"
+            className="flex max-w-[min(100vw-3rem,52rem)] flex-wrap items-center gap-x-4 gap-y-3 md:max-w-none md:justify-end"
+          >
             {adminLinks.map((l) => (
               <Link key={l.href} href={l.href} className="text-xs uppercase tracking-[0.2em] text-muted hover:text-white">
                 {l.label}
               </Link>
             ))}
-            <span className="hidden h-3 w-px bg-white/20 md:inline-block" aria-hidden />
+            <span className="hidden h-3 w-px shrink-0 bg-white/25 md:inline-block" aria-hidden />
             {publicSiteLinks.map((l) => (
               <Link
                 key={l.href}
                 href={l.href}
-                className="text-xs uppercase tracking-[0.2em] text-white/70 hover:text-white"
-                title="Opens public site page"
+                className="shrink-0 text-xs uppercase tracking-[0.2em] text-amber-100/90 hover:text-amber-50"
+                title="Public site (opens in same tab)"
               >
                 {l.label}
               </Link>
@@ -52,7 +55,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
               View site
             </Link>
             <LogoutButton />
-          </div>
+          </nav>
         </div>
       </div>
       <div className="mx-auto max-w-[1600px] px-6 py-12">{children}</div>

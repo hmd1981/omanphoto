@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -18,6 +19,24 @@ export default function AdminLoginPage() {
       <div className="w-full max-w-md border border-line p-10">
         <h1 className="font-display text-3xl tracking-[0.1em]">Admin sign-in</h1>
         <p className="mt-4 text-sm text-muted">Oman Photo control panel</p>
+        <p className="mt-6 text-[11px] uppercase tracking-[0.22em] text-muted">
+          Public site (no login required)
+        </p>
+        <nav className="mt-3 flex flex-wrap gap-x-5 gap-y-2 text-[11px] uppercase tracking-[0.2em]">
+          <Link href="/en" className="text-white/80 underline-offset-4 hover:text-white hover:underline">
+            Home
+          </Link>
+          <Link href="/en/ai-studio" className="text-white/80 underline-offset-4 hover:text-white hover:underline">
+            AI Studio
+          </Link>
+          <Link href="/en/book" className="text-white/80 underline-offset-4 hover:text-white hover:underline">
+            Book
+          </Link>
+        </nav>
+        <p className="mt-6 text-xs leading-relaxed text-neutral-500">
+          Protected URLs like <span className="text-neutral-400">/admin/page-heroes</span> redirect here until you sign in. After sign-in,{" "}
+          <strong className="text-neutral-400">AI Studio</strong> and <strong className="text-neutral-400">Book</strong> also appear in the admin top bar.
+        </p>
         <form
           className="mt-10 space-y-6"
           onSubmit={async (e) => {
