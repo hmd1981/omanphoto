@@ -217,6 +217,20 @@ if ! echo "${html}" | grep -Fq "build:${NEXT_PUBLIC_BUILD_ID}"; then
 fi
 log "deploy_marker_check=ok"
 
+# Assistant guard: prove the AI sales widget is actually live on the new slot
+# (EN pill, AR pill, POST /api/assistant -> 200). Catches the silent-failure mode
+# where docker/.env is missing NEXT_PUBLIC_ASSISTANT_ENABLED or DEEPSEEK_API_KEY.
+# Runs against the inactive port BEFORE the nginx swap, so a broken assistant
+# aborts cleanly without ever exposing it to the public.
+log "=== assistant guard on inactive slot (port ${INACTIVE_PORT}) ==="
+if ! ASSISTANT_VERIFY_URL="http://127.0.0.1:${INACTIVE_PORT}" \
+     bash "${ROOT}/scripts/verify-assistant.sh" 2>&1 | tee -a "${LOG_FILE}"; then
+  log "ERROR: assistant guard failed on inactive slot — aborting cutover (nginx untouched)"
+  cleanup_new_slot "${INACTIVE_SVC}"
+  exit 1
+fi
+log "assistant_guard=ok"
+
 log "=== backup nginx upstream and write port ${INACTIVE_PORT} ==="
 cp -a "${NGINX_GEN}" "${NGINX_GEN}.bak"
 write_upstream_port "${INACTIVE_PORT}"
