@@ -44,6 +44,7 @@ export const metadata: Metadata = {
   /** Machine-checkable deploy fingerprint (curl | grep ai-studio). Baked at `docker compose build`. */
   other: {
     omanphoto_deploy: `ai-studio booking:/en/contact,/ar/contact build:${buildId} t:${buildTime}`,
+    "google-adsense-account": "ca-pub-3160854101704307",
   },
 };
 
@@ -67,6 +68,12 @@ export default function RootLayout({
             gtag('config', 'AW-712088539');
           `}
         </Script>
+        <Script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3160854101704307"
+          strategy="beforeInteractive"
+          crossOrigin="anonymous"
+        />
         {children}
       </body>
     </html>
