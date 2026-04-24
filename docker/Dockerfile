@@ -12,6 +12,10 @@ WORKDIR /opt/omanphoto
 RUN npx prisma generate --schema=server/prisma/schema.prisma
 
 FROM base AS builder
+ARG NEXT_PUBLIC_BUILD_ID=unknown
+ARG NEXT_PUBLIC_BUILD_TIME=unknown
+ENV NEXT_PUBLIC_BUILD_ID=$NEXT_PUBLIC_BUILD_ID
+ENV NEXT_PUBLIC_BUILD_TIME=$NEXT_PUBLIC_BUILD_TIME
 COPY --from=deps /opt/omanphoto/app/node_modules ./app/node_modules
 COPY app ./app
 COPY server/prisma ./server/prisma

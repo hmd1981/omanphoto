@@ -32,3 +32,4 @@ uploads/
 # Misc
 coverage/
 .vercel
+.deploy-last.log

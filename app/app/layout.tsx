@@ -24,6 +24,9 @@ const notoArabic = Noto_Sans_Arabic({
   display: "swap",
 });
 
+const buildId = process.env.NEXT_PUBLIC_BUILD_ID ?? "local";
+const buildTime = process.env.NEXT_PUBLIC_BUILD_TIME ?? "";
+
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
   title: {
@@ -36,6 +39,10 @@ export const metadata: Metadata = {
     siteName: "Oman Photo",
     type: "website",
     locale: "en_OM",
+  },
+  /** Machine-checkable deploy fingerprint (curl | grep ai-studio). Baked at `docker compose build`. */
+  other: {
+    omanphoto_deploy: `ai-studio booking:/en/contact,/ar/contact build:${buildId} t:${buildTime}`,
   },
 };
 

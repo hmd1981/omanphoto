@@ -20,6 +20,9 @@ services:
     build:
       context: ..
       dockerfile: docker/Dockerfile
+      args:
+        NEXT_PUBLIC_BUILD_ID: ${NEXT_PUBLIC_BUILD_ID:-unknown}
+        NEXT_PUBLIC_BUILD_TIME: ${NEXT_PUBLIC_BUILD_TIME:-unknown}
     restart: unless-stopped
     # Bind to localhost only — public access via Nginx on 80/443
     ports:
