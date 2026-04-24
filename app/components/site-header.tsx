@@ -3,6 +3,7 @@ import type { SiteSettings } from "@prisma/client";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import type { Locale } from "@/lib/locale";
 import { localizedPath, pickTextWithOptionalFallback } from "@/lib/locale";
+import { ui } from "@/lib/ui-strings";
 
 type Props = {
   settings: SiteSettings | null;
@@ -11,11 +12,14 @@ type Props = {
 
 export function SiteHeader({ settings, locale }: Props) {
   const s = settings;
+  const u = ui(locale);
   const links = [
     { href: localizedPath(locale, "/"), label: pickTextWithOptionalFallback(locale, s?.navHomeEn, s?.navHomeAr) },
     { href: localizedPath(locale, "/portfolio"), label: pickTextWithOptionalFallback(locale, s?.navPortfolioEn, s?.navPortfolioAr) },
     { href: localizedPath(locale, "/services"), label: pickTextWithOptionalFallback(locale, s?.navServicesEn, s?.navServicesAr) },
     { href: localizedPath(locale, "/about"), label: pickTextWithOptionalFallback(locale, s?.navAboutEn, s?.navAboutAr) },
+    { href: localizedPath(locale, "/ai-studio"), label: u.navAiStudio },
+    { href: localizedPath(locale, "/book"), label: u.navBook },
     { href: localizedPath(locale, "/contact"), label: pickTextWithOptionalFallback(locale, s?.navContactEn, s?.navContactAr) },
   ];
   const brand = s?.brandName ?? "Oman Photo";

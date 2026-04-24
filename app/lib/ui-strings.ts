@@ -9,6 +9,14 @@ export function ui(locale: Locale) {
       video: "فيديو",
       languageEn: "English",
       languageAr: "العربية",
+      navAiStudio: "استوديو AI",
+      navBook: "الحجز",
+      homeCtaAiStudio: "استكشف استوديو AI",
+      homeCtaBook: "احجز جلسة",
+      footerAiStudio: "استوديو AI",
+      footerBooking: "الحجز",
+      serviceBookThis: "احجز هذه الخدمة",
+      bookSelectedService: "الخدمة المختارة",
     };
   }
   return {
@@ -17,5 +25,13 @@ export function ui(locale: Locale) {
     video: "Video",
     languageEn: "English",
     languageAr: "Arabic",
+    navAiStudio: "AI Studio",
+    navBook: "Book",
+    homeCtaAiStudio: "Explore AI Studio",
+    homeCtaBook: "Book a session",
+    footerAiStudio: "AI Studio",
+    footerBooking: "Booking",
+    serviceBookThis: "Book this service",
+    bookSelectedService: "Selected service",
   };
 }

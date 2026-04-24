@@ -11,10 +11,13 @@ export function ContactForm({
   locale,
   serviceOptions,
   copy,
+  defaultServiceSlug,
 }: {
   locale: Locale;
   serviceOptions: { value: string; label: string }[];
   copy: ContactFormCopy;
+  /** When set and matches a published service slug, pre-selects the service field. */
+  defaultServiceSlug?: string;
 }) {
   const schema = useMemo(
     () =>
@@ -38,6 +41,11 @@ export function ContactForm({
   const options = serviceOptions.length
     ? [...serviceOptions, { value: "other", label: locale === "ar" ? "أخرى" : "Other" }]
     : [];
+
+  const serviceDefault = useMemo(() => {
+    if (!defaultServiceSlug) return "";
+    return serviceOptions.some((o) => o.value === defaultServiceSlug) ? defaultServiceSlug : "";
+  }, [defaultServiceSlug, serviceOptions]);
 
   const [status, setStatus] = useState<"idle" | "loading" | "done" | "error">("idle");
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
@@ -139,7 +147,7 @@ export function ContactForm({
       </label>
       <label className="block md:col-span-1">
         <span className="text-[10px] uppercase tracking-[0.28em] text-muted">{copy.service}</span>
-        <select name="service" className={`${inputClass} ${borderOk}`} defaultValue="">
+        <select name="service" className={`${inputClass} ${borderOk}`} defaultValue={serviceDefault}>
           <option value="" disabled>
             {copy.selectService}
           </option>

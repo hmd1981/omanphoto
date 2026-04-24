@@ -1,12 +1,14 @@
+import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { PageHeroIntro } from "@/components/page-hero-intro";
 import { getPageHeroMedia, getPageSection, getPublishedServices } from "@/lib/data";
 import { PageHeroPlacement } from "@prisma/client";
 import { buildPageMetadata } from "@/lib/seo";
-import { pickPageContent, serviceDescription, serviceTitle } from "@/lib/locale";
+import { localizedPath, pickPageContent, serviceDescription, serviceTitle } from "@/lib/locale";
 import type { Locale } from "@/lib/locale";
 import { isLocale } from "@/lib/locale";
+import { ui } from "@/lib/ui-strings";
 
 export async function generateMetadata({
   params,
@@ -32,6 +34,7 @@ export default async function ServicesPage({ params }: { params: Promise<{ local
   ]);
   const introP = pickPageContent(locale, intro);
   const kickerP = pickPageContent(locale, kicker);
+  const u = ui(locale);
 
   return (
     <div className="editorial-section py-20 md:py-28 lg:py-32">
@@ -66,6 +69,14 @@ export default async function ServicesPage({ params }: { params: Promise<{ local
             <div className="md:col-span-8 md:pt-2">
               <p className="text-[0.9375rem] font-light leading-[1.88] text-ink-muted md:text-lg md:leading-[1.92]">
                 {serviceDescription(locale, s)}
+              </p>
+              <p className="mt-10">
+                <Link
+                  href={`${localizedPath(locale, "/book")}?service=${encodeURIComponent(s.slug)}`}
+                  className="inline-flex min-h-[44px] items-center text-[10px] uppercase tracking-[0.34em] text-ink-bright/85 underline-offset-[0.35em] transition-colors duration-300 hover:text-ink-bright hover:underline focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-4 focus-visible:outline-ink-bright/40"
+                >
+                  {u.serviceBookThis}
+                </Link>
               </p>
             </div>
           </section>

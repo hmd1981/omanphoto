@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { localizedPath } from "@/lib/locale";
+import { getPublishedServices } from "@/lib/data";
+import { localizedPath, serviceTitle } from "@/lib/locale";
 import type { Locale } from "@/lib/locale";
 import { isLocale } from "@/lib/locale";
+import { ui } from "@/lib/ui-strings";
 
 const baseUrl = () => (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000").replace(/\/$/, "");
 
@@ -36,10 +38,24 @@ export async function generateMetadata({
   };
 }
 
-export default async function BookPage({ params }: { params: Promise<{ locale: string }> }) {
+export default async function BookPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ locale: string }>;
+  searchParams: Promise<{ service?: string }>;
+}) {
   const { locale: raw } = await params;
   if (!isLocale(raw)) notFound();
   const locale = raw as Locale;
+  const { service: serviceSlug } = await searchParams;
+  const u = ui(locale);
+
+  const services = await getPublishedServices();
+  const matched = serviceSlug ? services.find((s) => s.slug === serviceSlug) : undefined;
+  const contactHref = matched
+    ? `${localizedPath(locale, "/contact")}?service=${encodeURIComponent(matched.slug)}`
+    : localizedPath(locale, "/contact");
 
   return (
     <article className="editorial-section pb-28 pt-24 md:pb-36 md:pt-32">
@@ -55,11 +71,19 @@ export default async function BookPage({ params }: { params: Promise<{ locale: s
             ? "أرسل الطلب عبر نموذج التواصل، أو راسلنا مباشرة."
             : "Send a request through the contact form, or reach us directly."}
         </p>
+        {matched ? (
+          <p className="mt-8 max-w-xl border border-line/50 bg-surface/60 px-5 py-4 text-[11px] uppercase tracking-[0.28em] text-muted">
+            <span className="text-muted">{u.bookSelectedService}</span>
+            <span className="mt-2 block font-display text-base normal-case tracking-normal text-ink-bright">
+              {serviceTitle(locale, matched)}
+            </span>
+          </p>
+        ) : null}
       </header>
 
       <div className="mt-16 flex flex-col gap-4 border-t border-line/50 pt-12 md:mt-20 md:pt-16">
         <Link
-          href={localizedPath(locale, "/contact")}
+          href={contactHref}
           className="inline-flex min-h-[52px] max-w-md items-center justify-center bg-ink-bright px-8 py-4 text-center text-[11px] font-medium uppercase tracking-[0.26em] text-paper transition-opacity hover:opacity-90"
         >
           {locale === "ar" ? "انتقل إلى التواصل" : "Go to contact"}

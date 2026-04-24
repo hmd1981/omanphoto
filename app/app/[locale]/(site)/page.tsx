@@ -53,9 +53,28 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   const ctaServices = pickPageContent(locale, home["cta_services"]).title;
   const videoLabel = ui(locale).video;
 
+  const nav = ui(locale);
+
   return (
     <div>
       <HomeHero hero={hero} site={site} locale={locale} />
+
+      <div className="border-b border-line/60">
+        <div className="editorial-section flex flex-col gap-6 py-10 sm:flex-row sm:items-baseline sm:justify-between sm:gap-10 md:py-12">
+          <Link
+            href={localizedPath(locale, "/ai-studio")}
+            className="text-[10px] uppercase tracking-[0.36em] text-ink-bright/80 transition-colors duration-300 hover:text-ink-bright focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-4 focus-visible:outline-ink-bright/40"
+          >
+            {nav.homeCtaAiStudio}
+          </Link>
+          <Link
+            href={localizedPath(locale, "/book")}
+            className="text-[10px] uppercase tracking-[0.36em] text-ink-bright/80 transition-colors duration-300 hover:text-ink-bright focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-4 focus-visible:outline-ink-bright/40"
+          >
+            {nav.homeCtaBook}
+          </Link>
+        </div>
+      </div>
 
       <section className="editorial-section py-28 md:py-40">
         <div className="grid gap-24 md:grid-cols-12 md:gap-20">

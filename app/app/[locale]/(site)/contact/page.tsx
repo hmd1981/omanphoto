@@ -22,10 +22,17 @@ export async function generateMetadata({
   return buildPageMetadata({ locale, seoSection: "contact", path: `/${locale}/contact` });
 }
 
-export default async function ContactPage({ params }: { params: Promise<{ locale: string }> }) {
+export default async function ContactPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ locale: string }>;
+  searchParams: Promise<{ service?: string }>;
+}) {
   const { locale: raw } = await params;
   if (!isLocale(raw)) notFound();
   const locale = raw as Locale;
+  const { service: serviceFromQuery } = await searchParams;
 
   const [contact, site, services, pageHero] = await Promise.all([
     getPageSectionMap("contact"),
@@ -56,6 +63,8 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
     value: s.slug,
     label: serviceTitle(locale, s),
   }));
+  const defaultServiceSlug =
+    serviceFromQuery && services.some((s) => s.slug === serviceFromQuery) ? serviceFromQuery : undefined;
 
   const copy = contactFormCopy(locale);
 
@@ -131,7 +140,12 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
           {formHeading ? (
             <p className="text-[10px] uppercase tracking-[0.3em] text-muted">{formHeading}</p>
           ) : null}
-          <ContactForm locale={locale} serviceOptions={serviceOptions} copy={copy} />
+          <ContactForm
+            locale={locale}
+            serviceOptions={serviceOptions}
+            copy={copy}
+            defaultServiceSlug={defaultServiceSlug}
+          />
         </div>
       </div>
 

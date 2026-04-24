@@ -3,6 +3,7 @@ import type { SiteSettings } from "@prisma/client";
 import type { Locale } from "@/lib/locale";
 import { resolveContactLinks } from "@/lib/contact-links";
 import { localizedPath, pickText, pickTextWithOptionalFallback } from "@/lib/locale";
+import { ui } from "@/lib/ui-strings";
 
 type Props = {
   settings: SiteSettings | null;
@@ -11,6 +12,7 @@ type Props = {
 
 export function SiteFooter({ settings, locale }: Props) {
   const s = settings;
+  const u = ui(locale);
   const links = resolveContactLinks(s);
   const brand = s?.brandName ?? "Oman Photo";
   const tagline = pickText(locale, s?.footerTaglineEn, s?.footerTaglineAr);
@@ -28,6 +30,20 @@ export function SiteFooter({ settings, locale }: Props) {
           {tagline ? <p className="mt-6 text-sm leading-[1.8] text-muted">{tagline}</p> : null}
         </div>
         <div className="flex flex-col gap-6 text-[11px] uppercase tracking-[0.3em] text-muted md:items-end">
+          <p className="flex flex-wrap gap-x-6 gap-y-2 md:justify-end">
+            <Link
+              href={localizedPath(locale, "/ai-studio")}
+              className="text-ink-muted transition-colors duration-300 hover:text-ink-bright"
+            >
+              {u.footerAiStudio}
+            </Link>
+            <Link
+              href={localizedPath(locale, "/book")}
+              className="text-ink-muted transition-colors duration-300 hover:text-ink-bright"
+            >
+              {u.footerBooking}
+            </Link>
+          </p>
           <Link
             href={localizedPath(locale, "/contact")}
             className="text-ink-bright/90 transition-colors duration-300 hover:text-ink-bright"
