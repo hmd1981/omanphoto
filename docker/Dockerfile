@@ -12,8 +12,9 @@ WORKDIR /opt/omanphoto
 RUN npx prisma generate --schema=server/prisma/schema.prisma
 
 FROM base AS builder
-ARG NEXT_PUBLIC_BUILD_ID=unknown
-ARG NEXT_PUBLIC_BUILD_TIME=unknown
+# Set only via `docker compose build --build-arg ...` (see docker/build-web.sh). Not read from compose .env.
+ARG NEXT_PUBLIC_BUILD_ID
+ARG NEXT_PUBLIC_BUILD_TIME
 ENV NEXT_PUBLIC_BUILD_ID=$NEXT_PUBLIC_BUILD_ID
 ENV NEXT_PUBLIC_BUILD_TIME=$NEXT_PUBLIC_BUILD_TIME
 COPY --from=deps /opt/omanphoto/app/node_modules ./app/node_modules
@@ -21,6 +22,15 @@ COPY app ./app
 COPY server/prisma ./server/prisma
 ENV NEXT_TELEMETRY_DISABLED=1
 WORKDIR /opt/omanphoto/app
+RUN set -eux; \
+  printf '%s\n' \
+    "=== Oman Photo / Next.js build stamps ===" \
+    "NEXT_PUBLIC_BUILD_ID=${NEXT_PUBLIC_BUILD_ID}" \
+    "NEXT_PUBLIC_BUILD_TIME=${NEXT_PUBLIC_BUILD_TIME}"; \
+  test -n "${NEXT_PUBLIC_BUILD_ID}"; \
+  test "${NEXT_PUBLIC_BUILD_ID}" != "unknown"; \
+  test -n "${NEXT_PUBLIC_BUILD_TIME}"; \
+  test "${NEXT_PUBLIC_BUILD_TIME}" != "unknown"
 RUN npm run build
 
 FROM base AS runner

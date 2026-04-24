@@ -20,11 +20,8 @@ services:
     build:
       context: ..
       dockerfile: docker/Dockerfile
-      # Prefer `docker/build-web.sh` or `docker compose build web --build-arg ...` so values are never
-      # lost to empty .env substitution. Fallbacks keep `docker compose build` without args usable.
-      args:
-        NEXT_PUBLIC_BUILD_ID: ${NEXT_PUBLIC_BUILD_ID:-unknown}
-        NEXT_PUBLIC_BUILD_TIME: ${NEXT_PUBLIC_BUILD_TIME:-unknown}
+      # NEXT_PUBLIC_BUILD_* are NOT listed here so docker/.env cannot override them during compose parsing.
+      # Always pass them with: ./docker/build-web.sh   OR   docker compose build web --build-arg ...
     restart: unless-stopped
     # Bind to localhost only — public access via Nginx on 80/443
     ports:

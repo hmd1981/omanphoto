@@ -12,6 +12,10 @@ NEXT_PUBLIC_BUILD_TIME="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 export NEXT_PUBLIC_BUILD_ID
 export NEXT_PUBLIC_BUILD_TIME
 
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+"${SCRIPT_DIR}/validate-build-stamps.sh"
+
+echo "=== docker compose build (build-arg only; compose .env ignored for stamps) ==="
 echo "NEXT_PUBLIC_BUILD_ID=${NEXT_PUBLIC_BUILD_ID}"
 echo "NEXT_PUBLIC_BUILD_TIME=${NEXT_PUBLIC_BUILD_TIME}"
 

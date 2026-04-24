@@ -24,8 +24,9 @@ const notoArabic = Noto_Sans_Arabic({
   display: "swap",
 });
 
-const buildId = process.env.NEXT_PUBLIC_BUILD_ID ?? "local";
-const buildTime = process.env.NEXT_PUBLIC_BUILD_TIME ?? "";
+/** Baked at Docker `next build` via --build-arg; local `next dev` uses dev placeholders. */
+const buildId = (process.env.NEXT_PUBLIC_BUILD_ID ?? "").trim() || "dev";
+const buildTime = (process.env.NEXT_PUBLIC_BUILD_TIME ?? "").trim() || "dev";
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
