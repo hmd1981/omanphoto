@@ -3,8 +3,8 @@
 # Prefer this script over raw `docker compose build` so build-args are never dropped.
 set -euo pipefail
 
-ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-cd "$ROOT/docker"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
 NEXT_PUBLIC_BUILD_ID="$(cd "$ROOT" && git rev-parse --short HEAD 2>/dev/null || echo nogit)"
 NEXT_PUBLIC_BUILD_TIME="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
@@ -12,8 +12,9 @@ NEXT_PUBLIC_BUILD_TIME="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 export NEXT_PUBLIC_BUILD_ID
 export NEXT_PUBLIC_BUILD_TIME
 
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 "${SCRIPT_DIR}/validate-build-stamps.sh"
+
+cd "$ROOT/docker"
 
 echo "=== docker compose build (build-arg only; compose .env ignored for stamps) ==="
 echo "NEXT_PUBLIC_BUILD_ID=${NEXT_PUBLIC_BUILD_ID}"
