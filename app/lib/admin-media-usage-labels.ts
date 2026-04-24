@@ -6,6 +6,8 @@ export const PAGE_HERO_USAGE_LABEL: Record<PageHeroPlacement, string> = {
   SERVICES_HERO: "Page hero — Services (/services)",
   ABOUT_HERO: "Page hero — Studio (/about)",
   CONTACT_HERO: "Page hero — Enquire (/contact)",
+  AI_STUDIO_HERO: "Page hero — AI Studio (/ai-studio)",
+  BOOK_HERO: "Page hero — Book (/book)",
 };
 
 export function pageHeroUsageLine(placement: PageHeroPlacement, role: "image" | "video"): string {

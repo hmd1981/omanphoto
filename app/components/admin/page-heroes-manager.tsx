@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { AdminPreviewFrame } from "@/components/admin/admin-preview-frame";
 import { MediaPlacementPicker } from "@/components/admin/media-placement-picker";
 import { pageHeroUsageLine } from "@/lib/admin-media-usage-labels";
+import { adminFetchErrorMessage, adminFetchJson } from "@/lib/admin-fetch";
 import { resolvePageHeroVisual } from "@/lib/page-hero-visual";
 import { isExternalUrl, resolveMediaSrc } from "@/lib/media-url";
 
@@ -24,6 +25,8 @@ const PLACEMENTS: { placement: PageHeroPlacement; title: string; route: string }
   { placement: PageHeroPlacement.SERVICES_HERO, title: "SERVICES_HERO — Services", route: "/en/services" },
   { placement: PageHeroPlacement.ABOUT_HERO, title: "ABOUT_HERO — Studio (About)", route: "/en/about" },
   { placement: PageHeroPlacement.CONTACT_HERO, title: "CONTACT_HERO — Enquire (Contact)", route: "/en/contact" },
+  { placement: PageHeroPlacement.AI_STUDIO_HERO, title: "AI_STUDIO_HERO — AI Studio", route: "/en/ai-studio" },
+  { placement: PageHeroPlacement.BOOK_HERO, title: "BOOK_HERO — Book", route: "/en/book" },
 ];
 
 function PreviewPanel({ hero }: { hero: HeroRow }) {
@@ -277,30 +280,46 @@ function PlacementCard({
 export function PageHeroesManager() {
   const [items, setItems] = useState<HeroRow[]>([]);
   const [allMedia, setAllMedia] = useState<MediaLite[]>([]);
+  const [supportedPlacements, setSupportedPlacements] = useState<PageHeroPlacement[]>(PLACEMENTS.map((x) => x.placement));
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   const refreshMediaOnly = useCallback(async () => {
-    const m = await fetch("/api/admin/media").then((r) => r.json());
+    const m = await adminFetchJson<{ items?: MediaLite[] }>("/api/admin/media");
     setAllMedia((m.items as MediaLite[]) ?? []);
   }, []);
 
   const reload = useCallback(async () => {
+    setLoading(true);
+    setLoadError(null);
+    try {
     const [h, m] = await Promise.all([
-      fetch("/api/admin/page-hero-media").then((r) => r.json()),
-      fetch("/api/admin/media").then((r) => r.json()),
+      adminFetchJson<{ items?: HeroRow[]; supportedPlacements?: PageHeroPlacement[] }>("/api/admin/page-hero-media"),
+      adminFetchJson<{ items?: MediaLite[] }>("/api/admin/media"),
     ]);
     setItems((h.items as HeroRow[]) ?? []);
     setAllMedia((m.items as MediaLite[]) ?? []);
+    setSupportedPlacements(
+      Array.isArray(h.supportedPlacements) && h.supportedPlacements.length > 0
+        ? h.supportedPlacements
+        : PLACEMENTS.map((x) => x.placement),
+    );
+    } catch (error) {
+      setLoadError(adminFetchErrorMessage(error));
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   useEffect(() => {
-    void (async () => {
-      await reload();
-      setLoading(false);
-    })();
+    void reload();
   }, [reload]);
 
   const byPlacement = useMemo(() => new Map(items.map((x) => [x.placement, x])), [items]);
+  const visiblePlacements = useMemo(
+    () => PLACEMENTS.filter((meta) => supportedPlacements.includes(meta.placement)),
+    [supportedPlacements],
+  );
 
   const onSaved = useCallback((row: HeroRow) => {
     setItems((prev) => {
@@ -315,13 +334,29 @@ export function PageHeroesManager() {
     return <p className="text-sm text-muted">Loading…</p>;
   }
 
+  if (loadError) {
+    return (
+      <div className="mt-8 border border-red-900/70 bg-red-950/20 p-6">
+        <p className="text-sm text-red-200">Could not load Page Heroes.</p>
+        <p className="mt-2 text-xs text-neutral-400">{loadError}</p>
+        <button
+          type="button"
+          onClick={() => void reload()}
+          className="mt-4 border border-white px-5 py-2 text-xs uppercase tracking-[0.2em] hover:bg-white hover:text-black"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-12">
       <p className="max-w-2xl text-sm text-neutral-400">
         Assign image or video for each public page hero (top of page, right column on large screens). Set inactive or clear
         selection to hide the media panel. Arabic pages mirror layout automatically.
       </p>
-      {PLACEMENTS.map((meta) => (
+      {visiblePlacements.map((meta) => (
         <PlacementCard
           key={meta.placement}
           meta={meta}

@@ -1,8 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { AdminPreviewFrame } from "@/components/admin/admin-preview-frame";
 import { AdminServicesLivePreview } from "@/components/admin/admin-services-live-preview";
+import type { MediaPickItem } from "@/components/admin/media-placement-picker";
+import { ServiceMediaEditor, type ServiceMediaRow } from "@/components/admin/service-media-editor";
 
 type Service = {
   id: string;
@@ -13,6 +15,7 @@ type Service = {
   descriptionAr: string;
   sortOrder: number;
   published: boolean;
+  serviceMedia?: ServiceMediaRow[];
 };
 
 export function ServicesManager() {
@@ -27,6 +30,13 @@ export function ServicesManager() {
     published: true,
   });
   const [previewLocale, setPreviewLocale] = useState<"en" | "ar">("en");
+  const [allMedia, setAllMedia] = useState<MediaPickItem[]>([]);
+
+  const loadMediaLibrary = useCallback(async () => {
+    const res = await fetch("/api/admin/media");
+    const json = await res.json();
+    setAllMedia((json.items ?? []) as MediaPickItem[]);
+  }, []);
 
   async function reload() {
     const res = await fetch("/api/admin/services");
@@ -37,6 +47,10 @@ export function ServicesManager() {
   useEffect(() => {
     void reload();
   }, []);
+
+  useEffect(() => {
+    void loadMediaLibrary();
+  }, [loadMediaLibrary]);
 
   function patch(id: string, patch: Partial<Service>) {
     setRows((prev) => prev.map((r) => (r.id === id ? { ...r, ...patch } : r)));
@@ -220,7 +234,27 @@ export function ServicesManager() {
                     dir="rtl"
                   />
                 </label>
-                <label className="block">
+              </div>
+
+              <div className="mt-8 border border-amber-900/40 bg-amber-950/15 px-4 py-5">
+                <p className="text-[11px] font-medium uppercase tracking-[0.22em] text-amber-100/90">Photos · public services page</p>
+                <p className="mt-2 text-xs leading-relaxed text-neutral-400">
+                  First image = cover on /en/services and /ar/services. Rest appear on the service detail page. Uses the same Media library as elsewhere.
+                </p>
+                <div className="mt-4">
+                  <ServiceMediaEditor
+                    serviceId={s.id}
+                    serviceTitleEn={s.titleEn}
+                    initialRows={s.serviceMedia ?? []}
+                    allMedia={allMedia}
+                    onRefreshLibrary={loadMediaLibrary}
+                    onSaved={reload}
+                  />
+                </div>
+              </div>
+
+              <div className="mt-6 flex flex-wrap items-end gap-6 border-t border-line/50 pt-6">
+                <label className="block w-28">
                   <span className="text-xs uppercase tracking-[0.2em] text-muted">Sort</span>
                   <input
                     type="number"
@@ -229,7 +263,7 @@ export function ServicesManager() {
                     className="mt-2 w-full border border-line bg-black px-3 py-2 text-sm"
                   />
                 </label>
-                <label className="flex items-center gap-2 text-sm">
+                <label className="flex items-center gap-2 pb-2 text-sm">
                   <input
                     type="checkbox"
                     checked={s.published}

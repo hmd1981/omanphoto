@@ -48,6 +48,28 @@ export async function getPublishedServices() {
   return prisma.service.findMany({
     where: { published: true },
     orderBy: { sortOrder: "asc" },
+    include: {
+      serviceMedia: {
+        where: { active: true },
+        orderBy: { sortOrder: "asc" },
+        include: { media: true },
+      },
+    },
+  });
+}
+
+/** Single published service with gallery rows (ordered ServiceMedia + Media). */
+export async function getPublishedServiceBySlug(slug: string) {
+  noStore();
+  return prisma.service.findFirst({
+    where: { slug, published: true },
+    include: {
+      serviceMedia: {
+        where: { active: true },
+        orderBy: { sortOrder: "asc" },
+        include: { media: true },
+      },
+    },
   });
 }
 

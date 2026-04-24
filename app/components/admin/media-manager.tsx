@@ -4,6 +4,7 @@ import { MediaType } from "@prisma/client";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { AdminGalleryMasonryPreview } from "@/components/admin/admin-gallery-masonry-preview";
 import { AdminPreviewFrame } from "@/components/admin/admin-preview-frame";
+import { adminFetchErrorMessage, adminFetchJson } from "@/lib/admin-fetch";
 import { isExternalUrl, resolveMediaSrc } from "@/lib/media-url";
 
 type Category = { id: string; nameEn: string; nameAr: string };
@@ -58,14 +59,23 @@ export function MediaManager() {
   const [editing, setEditing] = useState<MediaRow | null>(null);
   const [previewIncludeInactive, setPreviewIncludeInactive] = useState(false);
   const [tableFilter, setTableFilter] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   const reload = useCallback(async () => {
-    const [c, m] = await Promise.all([
-      fetch("/api/admin/categories").then((r) => r.json()),
-      fetch("/api/admin/media").then((r) => r.json()),
-    ]);
-    setCategories(c.items);
-    setItems(m.items);
+    setLoadError(null);
+    try {
+      const [c, m] = await Promise.all([
+        adminFetchJson<{ items?: Category[] }>("/api/admin/categories"),
+        adminFetchJson<{ items?: MediaRow[] }>("/api/admin/media"),
+      ]);
+      setCategories(c.items ?? []);
+      setItems((m.items ?? []).map((row) => ({ ...row, usageLabels: row.usageLabels ?? [] })));
+    } catch (error) {
+      setLoadError(adminFetchErrorMessage(error));
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   useEffect(() => {
@@ -80,7 +90,7 @@ export function MediaManager() {
         m.titleEn.toLowerCase().includes(q) ||
         m.titleAr.toLowerCase().includes(q) ||
         m.id.toLowerCase().includes(q) ||
-        m.usageLabels.some((u) => u.toLowerCase().includes(q)),
+        (m.usageLabels ?? []).some((u) => u.toLowerCase().includes(q)),
     );
   }, [items, tableFilter]);
 
@@ -101,6 +111,25 @@ export function MediaManager() {
   return (
     <div className="mt-10 grid gap-10 xl:grid-cols-[minmax(0,1fr)_min(420px,38%)] xl:items-start">
       <div className="min-w-0 space-y-10">
+      {loading ? (
+        <p className="border border-line/60 bg-neutral-950/40 p-4 text-sm text-muted">Loading media library…</p>
+      ) : null}
+      {loadError ? (
+        <div className="border border-red-900/70 bg-red-950/20 p-5">
+          <p className="text-sm text-red-200">Could not load media library.</p>
+          <p className="mt-2 text-xs text-neutral-400">{loadError}</p>
+          <button
+            type="button"
+            onClick={() => {
+              setLoading(true);
+              void reload();
+            }}
+            className="mt-4 border border-white px-5 py-2 text-xs uppercase tracking-[0.2em] hover:bg-white hover:text-black"
+          >
+            Retry
+          </button>
+        </div>
+      ) : null}
       <form
         className="space-y-4 border border-line p-6"
         onSubmit={async (e) => {
@@ -328,7 +357,7 @@ export function MediaManager() {
                 <td className="px-4 py-3 align-top text-muted">{m.type}</td>
                 <td className="max-w-xs px-4 py-3 align-top text-xs text-neutral-400">
                   <ul className="list-inside list-disc space-y-1">
-                    {m.usageLabels.map((u) => (
+                    {(m.usageLabels ?? []).map((u) => (
                       <li key={u}>{u}</li>
                     ))}
                   </ul>
@@ -382,6 +411,15 @@ export function MediaManager() {
                 </td>
               </tr>
             ))}
+            {!loading && !loadError && filteredItems.length === 0 ? (
+              <tr>
+                <td colSpan={8} className="px-4 py-10 text-center text-sm text-muted">
+                  {items.length === 0
+                    ? "No media items yet. Add one above, or check /api/admin/media if public media exists."
+                    : "No media items match this search."}
+                </td>
+              </tr>
+            ) : null}
           </tbody>
         </table>
       </div>

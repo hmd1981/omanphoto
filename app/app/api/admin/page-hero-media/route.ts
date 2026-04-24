@@ -29,11 +29,12 @@ function emptyToNull(v: string | null | undefined) {
 export async function GET() {
   const gate = await requireAdminUser();
   if ("error" in gate) return gate.error;
+  const supportedPlacements = Object.values(PageHeroPlacement);
   const items = await prisma.pageHeroMedia.findMany({
     include: { imageMedia: true, videoMedia: true },
     orderBy: [{ sortOrder: "asc" }, { placement: "asc" }],
   });
-  return NextResponse.json({ items });
+  return NextResponse.json({ items, supportedPlacements });
 }
 
 export async function PATCH(request: Request) {

@@ -35,7 +35,7 @@ export function ChangePasswordForm() {
     >
       <h2 className="text-sm uppercase tracking-[0.25em] text-muted">Change password</h2>
       <p className="text-xs text-neutral-500">
-        Use at least 12 characters, with letters, numbers, and a symbol. Do not reuse common words.
+        Strong passwords: at least 12 characters with letters, numbers, and a symbol. The literal <code className="text-neutral-400">admin</code> is allowed if you keep the default studio credential.
       </p>
       <label className="block">
         <span className="text-[10px] uppercase tracking-[0.2em] text-muted">Current password</span>

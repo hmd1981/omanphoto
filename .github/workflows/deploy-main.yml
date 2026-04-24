@@ -1,0 +1,129 @@
+# Oman Photo — push to `main`
+#
+# `pipeline`: Docker build, prisma-safe migrate, origin checks on the GitHub runner.
+#
+# `deploy-production` (optional): SSH → git pull → ./scripts/zero-downtime-deploy.sh (blue/green)
+#   → curl public HTTPS. Enable with repo variable PRODUCTION_DEPLOY=true and SSH secrets
+#   (see scripts/env.deploy.example). DATABASE_URL remains on the server only.
+
+name: CI / Deploy (main)
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: omanphoto-deploy-main
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  pipeline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Run CI pipeline (build, migrate, restart, verify)
+        env:
+          GITHUB_RUN_ID: ${{ github.run_id }}
+          GITHUB_SHA: ${{ github.sha }}
+        run: bash scripts/ci-pipeline.sh
+
+      - name: Upload deploy log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: omanphoto-ci-deploy-${{ github.run_id }}
+          path: ci-deploy.log
+          if-no-files-found: warn
+
+  deploy-production:
+    name: Production (SSH)
+    needs: pipeline
+    if: ${{ success() && github.ref == 'refs/heads/main' && vars.PRODUCTION_DEPLOY == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Log deployment start (summary + console)
+        env:
+          PUBLIC_VERIFY_URL: ${{ vars.PUBLIC_VERIFY_URL }}
+        run: |
+          set -euo pipefail
+          TS="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          BASE="${PUBLIC_VERIFY_URL:-https://omanphoto.com}"
+          {
+            echo "## Production deployment (SSH)"
+            echo "- **Deployment timestamp (UTC):** ${TS}"
+            echo "- **Commit hash:** \`${{ github.sha }}\`"
+            echo "- **Public verify target:** ${BASE}/en/ai-studio"
+          } | tee -a "${GITHUB_STEP_SUMMARY}"
+
+      - name: Require SSH secrets
+        env:
+          PRODUCTION_SSH_KEY: ${{ secrets.PRODUCTION_SSH_KEY }}
+          PRODUCTION_SSH_HOST: ${{ secrets.PRODUCTION_SSH_HOST }}
+          PRODUCTION_SSH_USER: ${{ secrets.PRODUCTION_SSH_USER }}
+        run: |
+          set -euo pipefail
+          : "${PRODUCTION_SSH_KEY:?Set repository secret PRODUCTION_SSH_KEY}"
+          : "${PRODUCTION_SSH_HOST:?Set repository secret PRODUCTION_SSH_HOST}"
+          : "${PRODUCTION_SSH_USER:?Set repository secret PRODUCTION_SSH_USER}"
+
+      - name: SSH — git pull and ci-pipeline on server
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.PRODUCTION_SSH_HOST }}
+          username: ${{ secrets.PRODUCTION_SSH_USER }}
+          key: ${{ secrets.PRODUCTION_SSH_KEY }}
+          port: ${{ vars.PRODUCTION_SSH_PORT || 22 }}
+          timeout: 40m
+          command_timeout: 40m
+          script_stop: true
+          script: |
+            set -euo pipefail
+            export GIT_TERMINAL_PROMPT=0
+            REPO="${{ vars.PRODUCTION_REPO_PATH }}"
+            cd "${REPO:-/root/omanphoto}"
+            export GITHUB_SHA="${{ github.sha }}"
+            export GITHUB_RUN_ID="${{ github.run_id }}"
+            export NEXT_PUBLIC_BUILD_ID="${{ github.sha }}"
+            export NEXT_PUBLIC_BUILD_TIME="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            export ZERO_DEPLOY_LOG="${PWD}/zero-downtime-production.log"
+            git fetch origin main
+            git checkout main
+            git pull --ff-only origin main
+            ./scripts/zero-downtime-deploy.sh
+
+      - name: Verify public site (HTTPS 200)
+        env:
+          PUBLIC_VERIFY_URL: ${{ vars.PUBLIC_VERIFY_URL }}
+          PUBLIC_VERIFY_DELAY_SEC: ${{ vars.PUBLIC_VERIFY_DELAY_SEC }}
+        run: |
+          set -euo pipefail
+          BASE="${PUBLIC_VERIFY_URL:-https://omanphoto.com}"
+          sleep "${PUBLIC_VERIFY_DELAY_SEC:-8}"
+          curl -sf --max-time 45 "${BASE}/en/ai-studio" -o /dev/null
+          {
+            echo "- **Public GET /en/ai-studio:** HTTP 200"
+            echo "### Production deployment result: **SUCCESS**"
+          } >> "${GITHUB_STEP_SUMMARY}"
+
+      - name: Log production failure
+        if: failure()
+        env:
+          PUBLIC_VERIFY_URL: ${{ vars.PUBLIC_VERIFY_URL }}
+        run: |
+          BASE="${PUBLIC_VERIFY_URL:-https://omanphoto.com}"
+          {
+            echo "- **Public check target was:** ${BASE}/en/ai-studio"
+            echo "### Production deployment result: **FAILED**"
+          } >> "${GITHUB_STEP_SUMMARY}"
+          exit 0

@@ -2,11 +2,15 @@ import Link from "next/link";
 
 const cards = [
   { href: "/admin/site", title: "Site settings", body: "Brand, navigation labels, footer, default SEO." },
-  { href: "/admin/hero", title: "Homepage hero", body: "Image or video, overlay copy, and primary call to action." },
+  {
+    href: "/admin/hero",
+    title: "Homepage intro (hero)",
+    body: "Opening section of /en and /ar. Pick a picture or a motion video as background, edit the eyebrow, title, subtitle, and CTA.",
+  },
   {
     href: "/admin/page-heroes",
-    title: "Page heroes",
-    body: "PORTFOLIO_HERO, SERVICES_HERO, ABOUT_HERO, CONTACT_HERO — top media for Galleries, Services, Studio, Enquire.",
+    title: "Page intros",
+    body: "Top media beside the title on Galleries, Services, About, Contact, AI Studio, and Book — image or motion video per page.",
   },
   { href: "/admin/categories", title: "Gallery categories", body: "Create, order, and publish categories used as filters on the Galleries page." },
   { href: "/admin/media", title: "Galleries", body: "Upload images and videos, assign categories, and feature items for the public site." },

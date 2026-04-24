@@ -4,14 +4,16 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "prisma generate --schema=../server/prisma/schema.prisma && next build",
+    "build": "bash ../scripts/prisma-safe.sh generate --schema=../server/prisma/schema.prisma && next build",
     "start": "next start",
     "lint": "eslint",
-    "db:generate": "prisma generate --schema=../server/prisma/schema.prisma",
-    "db:migrate": "prisma migrate dev --schema=../server/prisma/schema.prisma",
-    "db:push": "prisma db push --schema=../server/prisma/schema.prisma",
-    "db:seed": "prisma db seed",
-    "db:studio": "prisma studio --schema=../server/prisma/schema.prisma"
+    "db:generate": "bash ../scripts/prisma-safe.sh generate --schema=../server/prisma/schema.prisma",
+    "db:migrate": "bash ../scripts/prisma-safe.sh migrate dev --schema=../server/prisma/schema.prisma",
+    "db:migrate:deploy": "bash ../scripts/prisma-safe.sh migrate deploy --schema=../server/prisma/schema.prisma",
+    "db:push": "bash ../scripts/prisma-safe.sh db push --schema=../server/prisma/schema.prisma",
+    "db:seed": "bash ../scripts/prisma-safe.sh db seed",
+    "db:studio": "bash ../scripts/prisma-safe.sh studio --schema=../server/prisma/schema.prisma",
+    "admin:reset-password": "tsx scripts/reset-admin-password.ts"
   },
   "prisma": {
     "schema": "../server/prisma/schema.prisma",

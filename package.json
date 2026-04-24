@@ -1,5 +1,14 @@
 {
   "name": "omanphoto",
   "private": true,
-  "description": "Monorepo root placeholder so Prisma schema in server/ resolves without auto-installing into the wrong directory."
+  "description": "Monorepo root placeholder so Prisma schema in server/ resolves without auto-installing into the wrong directory.",
+  "scripts": {
+    "db:check-env": "bash scripts/check-env.sh",
+    "db:migrate:deploy": "bash scripts/prisma-safe.sh migrate deploy --schema=../server/prisma/schema.prisma",
+    "deploy:clean": "bash scripts/clean-full-redeploy.sh",
+    "admin:reset-password": "cd app && npm run admin:reset-password",
+    "ci:pipeline": "bash scripts/ci-pipeline.sh",
+    "deploy:zero": "bash scripts/zero-downtime-deploy.sh",
+    "deploy:rollback": "bash scripts/rollback-slot.sh"
+  }
 }

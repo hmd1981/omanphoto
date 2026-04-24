@@ -32,9 +32,23 @@ export async function GET(request: Request) {
   if ("error" in gate) return gate.error;
   const { searchParams } = new URL(request.url);
   const categoryId = searchParams.get("categoryId");
-  const [hero, pageHeroRows] = await Promise.all([
-    prisma.heroSettings.findUnique({ where: { id: "singleton" } }),
-    prisma.pageHeroMedia.findMany(),
+  const [hero, pageHeroRows, serviceMediaRows] = await Promise.all([
+    prisma.heroSettings.findUnique({ where: { id: "singleton" } }).catch((error) => {
+      console.error("GET /api/admin/media hero usage lookup failed", error);
+      return null;
+    }),
+    prisma.pageHeroMedia.findMany().catch((error) => {
+      console.error("GET /api/admin/media page hero usage lookup failed", error);
+      return [];
+    }),
+    prisma.serviceMedia
+      .findMany({
+        include: { service: { select: { titleEn: true, slug: true } } },
+      })
+      .catch((error) => {
+        console.error("GET /api/admin/media service usage lookup failed", error);
+        return [];
+      }),
   ]);
   const items = await prisma.media.findMany({
     where: categoryId ? { categoryId } : undefined,
@@ -46,8 +60,13 @@ export async function GET(request: Request) {
     if (hero?.imageMediaId === m.id) usageLabels.push("Home hero — image background");
     if (hero?.videoMediaId === m.id) usageLabels.push("Home hero — video background");
     for (const ph of pageHeroRows) {
-      if (ph.imageMediaId === m.id) usageLabels.push(`${PAGE_HERO_USAGE_LABEL[ph.placement]} · image`);
-      if (ph.videoMediaId === m.id) usageLabels.push(`${PAGE_HERO_USAGE_LABEL[ph.placement]} · video`);
+      const label = PAGE_HERO_USAGE_LABEL[ph.placement] ?? `Page hero — ${ph.placement}`;
+      if (ph.imageMediaId === m.id) usageLabels.push(`${label} · image`);
+      if (ph.videoMediaId === m.id) usageLabels.push(`${label} · video`);
+    }
+    for (const sm of serviceMediaRows) {
+      if (sm.mediaId !== m.id) continue;
+      usageLabels.push(`Service — ${sm.service.titleEn} (${sm.service.slug})`);
     }
     if (m.featured) usageLabels.push("Home page — featured strip");
     if (m.categoryId && m.category) {

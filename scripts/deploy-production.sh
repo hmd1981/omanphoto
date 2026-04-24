@@ -19,6 +19,19 @@ if [[ -f "${ROOT}/.env.deploy" ]]; then
   set +a
 fi
 
+# Optional: same-host Postgres URL for preflight (only used if .env.deploy did not set DATABASE_URL).
+if [[ -z "${DATABASE_URL:-}" && -f "${ROOT}/.env" ]]; then
+  set -a
+  # shellcheck source=/dev/null
+  source "${ROOT}/.env"
+  set +a
+fi
+
+if [[ -n "${DATABASE_URL:-}" ]]; then
+  echo "=== check-env (deploy preflight) ===" | tee -a "$LOG"
+  "${ROOT}/scripts/check-env.sh" 2>&1 | tee -a "$LOG" || exit 1
+fi
+
 NEXT_PUBLIC_BUILD_ID="$(cd "$ROOT" && git rev-parse --short HEAD 2>/dev/null || echo nogit)"
 NEXT_PUBLIC_BUILD_TIME="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 export NEXT_PUBLIC_BUILD_ID
@@ -33,33 +46,24 @@ export NEXT_PUBLIC_BUILD_TIME
   echo "NEXT_PUBLIC_BUILD_TIME=${NEXT_PUBLIC_BUILD_TIME}"
 } | tee -a "$LOG"
 
-cd "${ROOT}/docker"
+echo "=== zero-downtime deploy (blue/green) ===" | tee -a "$LOG"
+export NEXT_PUBLIC_BUILD_ID
+export NEXT_PUBLIC_BUILD_TIME
+if ! "${ROOT}/scripts/zero-downtime-deploy.sh" 2>&1 | tee -a "$LOG"; then
+  echo "zero_downtime_deploy_result=fail" | tee -a "$LOG"
+  exit 1
+fi
+echo "zero_downtime_deploy_result=ok" | tee -a "$LOG"
 
-echo "=== docker compose: build web (--build-arg only; compose .env cannot override stamps) ===" | tee -a "$LOG"
-docker compose build web \
-  --build-arg "NEXT_PUBLIC_BUILD_ID=${NEXT_PUBLIC_BUILD_ID}" \
-  --build-arg "NEXT_PUBLIC_BUILD_TIME=${NEXT_PUBLIC_BUILD_TIME}"
+ACTIVE_SLOT="$(tr '[:upper:]' '[:lower:]' <"${ROOT}/.active-slot" 2>/dev/null | tr -d '[:space:]' || echo blue)"
+ORIGIN_PORT=3001
+if [[ "${ACTIVE_SLOT}" == "green" ]]; then
+  ORIGIN_PORT=3002
+fi
+export DEPLOY_VERIFY_ORIGIN_URL="${DEPLOY_VERIFY_ORIGIN_URL:-http://127.0.0.1:${ORIGIN_PORT}/en}"
 
-echo "=== docker compose: up -d web ===" | tee -a "$LOG"
-docker compose up -d web
-
-CID="$(docker compose ps -q web)"
-{
-  echo "container_id=${CID}"
-  docker inspect "$CID" --format 'image_id={{.Image}} created={{.Created}}' 2>/dev/null || true
-} | tee -a "$LOG"
-
-echo "=== waiting for origin /en ===" | tee -a "$LOG"
-for _ in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
-  if curl -sf --max-time 2 "http://127.0.0.1:3000/en" -o /dev/null; then
-    break
-  fi
-  sleep 1
-done
-
-echo "=== verify: origin deploy markers ===" | tee -a "$LOG"
-if DEPLOY_VERIFY_ORIGIN_URL="${DEPLOY_VERIFY_ORIGIN_URL:-http://127.0.0.1:3000/en}" \
-  DEPLOY_VERIFY_PUBLIC_URL="" \
+echo "=== verify: origin deploy markers (${DEPLOY_VERIFY_ORIGIN_URL}) ===" | tee -a "$LOG"
+if DEPLOY_VERIFY_PUBLIC_URL="" \
   "${ROOT}/scripts/verify-deploy-markers.sh" 2>&1 | tee -a "$LOG"; then
   echo "origin_verify_result=ok" | tee -a "$LOG"
 else
@@ -96,8 +100,7 @@ else
   PUBLIC="${DEPLOY_VERIFY_PUBLIC_URL:-https://omanphoto.com/en}"
   export DEPLOY_VERIFY_PUBLIC_URL="$PUBLIC"
   echo "=== verify: public deploy markers (${PUBLIC}) ===" | tee -a "$LOG"
-  if DEPLOY_VERIFY_ORIGIN_URL="${DEPLOY_VERIFY_ORIGIN_URL:-http://127.0.0.1:3000/en}" \
-    "${ROOT}/scripts/verify-deploy-markers.sh" 2>&1 | tee -a "$LOG"; then
+  if "${ROOT}/scripts/verify-deploy-markers.sh" 2>&1 | tee -a "$LOG"; then
     echo "public_verify_result=ok" | tee -a "$LOG"
   else
     echo "public_verify_result=fail" | tee -a "$LOG"

@@ -22,7 +22,15 @@ const createSchema = z.object({
 export async function GET() {
   const gate = await requireAdminUser();
   if ("error" in gate) return gate.error;
-  const items = await prisma.service.findMany({ orderBy: { sortOrder: "asc" } });
+  const items = await prisma.service.findMany({
+    orderBy: { sortOrder: "asc" },
+    include: {
+      serviceMedia: {
+        orderBy: { sortOrder: "asc" },
+        include: { media: true },
+      },
+    },
+  });
   return NextResponse.json({ items });
 }
 

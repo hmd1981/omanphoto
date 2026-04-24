@@ -33,3 +33,8 @@ uploads/
 coverage/
 .vercel
 .deploy-last.log
+
+# Blue/green runtime (server / local deploy state; not source-controlled)
+.active-slot
+.previous-slot
+docker/nginx-upstream-generated.conf

@@ -17,6 +17,11 @@ export function ui(locale: Locale) {
       footerBooking: "الحجز",
       serviceBookThis: "احجز هذه الخدمة",
       bookSelectedService: "الخدمة المختارة",
+      serviceViewDetails: "عرض الخدمة",
+      serviceCoverPlaceholder: "صورة الغلاف تُعرَف من لوحة الإدارة",
+      serviceBreadcrumbParent: "الخدمات",
+      serviceBackToAll: "كل الخدمات",
+      serviceGalleryHeading: "معرض الصور",
     };
   }
   return {
@@ -33,5 +38,10 @@ export function ui(locale: Locale) {
     footerBooking: "Booking",
     serviceBookThis: "Book this service",
     bookSelectedService: "Selected service",
+    serviceViewDetails: "View service",
+    serviceCoverPlaceholder: "Cover image is set in Admin",
+    serviceBreadcrumbParent: "Services",
+    serviceBackToAll: "All services",
+    serviceGalleryHeading: "Gallery",
   };
 }

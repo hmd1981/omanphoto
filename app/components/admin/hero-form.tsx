@@ -6,6 +6,7 @@ import { AdminHeroLivePreview } from "@/components/admin/admin-hero-live-preview
 import { AdminPreviewFrame } from "@/components/admin/admin-preview-frame";
 import { MediaPlacementPicker } from "@/components/admin/media-placement-picker";
 import { HOME_HERO_IMAGE_USAGE, HOME_HERO_VIDEO_USAGE } from "@/lib/admin-media-usage-labels";
+import { adminFetchErrorMessage, adminFetchJson } from "@/lib/admin-fetch";
 import { resolveMediaSrc } from "@/lib/media-url";
 
 type Hero = {
@@ -63,6 +64,7 @@ const inputCls = "mt-2 w-full border border-line bg-black px-4 py-3 text-sm";
 export function HeroForm() {
   const [allMedia, setAllMedia] = useState<MediaLite[]>([]);
   const [message, setMessage] = useState<string | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   const [mediaType, setMediaType] = useState<MediaType>(MediaType.IMAGE);
   const [imageMediaId, setImageMediaId] = useState<string | null>(null);
@@ -82,15 +84,17 @@ export function HeroForm() {
   const [loading, setLoading] = useState(true);
 
   const refreshLibrary = useCallback(async () => {
-    const m = await fetch("/api/admin/media").then((r) => r.json());
+    const m = await adminFetchJson<{ items?: MediaLite[] }>("/api/admin/media");
     setAllMedia(((m.items as MediaLite[]) ?? []) as MediaLite[]);
   }, []);
 
-  useEffect(() => {
-    void (async () => {
+  const load = useCallback(async () => {
+    setLoading(true);
+    setLoadError(null);
+    try {
       const [h, m] = await Promise.all([
-        fetch("/api/admin/hero").then((r) => r.json()),
-        fetch("/api/admin/media").then((r) => r.json()),
+        adminFetchJson<{ hero?: Hero | null }>("/api/admin/hero"),
+        adminFetchJson<{ items?: MediaLite[] }>("/api/admin/media"),
       ]);
       const items = (m.items as MediaLite[]) ?? [];
       setAllMedia(items);
@@ -113,9 +117,16 @@ export function HeroForm() {
         setOverlayTitleEn("Masterpiece is crafted with intent.");
         setOverlayTitleAr("مو أي تصوير… هذا شغل يُصنع بذوق.");
       }
+    } catch (error) {
+      setLoadError(adminFetchErrorMessage(error));
+    } finally {
       setLoading(false);
-    })();
+    }
   }, []);
+
+  useEffect(() => {
+    void load();
+  }, [load]);
 
   const byId = useMemo(() => new Map(allMedia.map((x) => [x.id, x])), [allMedia]);
 
@@ -130,6 +141,22 @@ export function HeroForm() {
 
   if (loading) {
     return <p className="text-sm text-muted">Loading…</p>;
+  }
+
+  if (loadError) {
+    return (
+      <div className="mt-8 border border-red-900/70 bg-red-950/20 p-6">
+        <p className="text-sm text-red-200">Could not load Homepage Hero editor.</p>
+        <p className="mt-2 text-xs text-neutral-400">{loadError}</p>
+        <button
+          type="button"
+          onClick={() => void load()}
+          className="mt-4 border border-white px-5 py-2 text-xs uppercase tracking-[0.2em] hover:bg-white hover:text-black"
+        >
+          Retry
+        </button>
+      </div>
+    );
   }
 
   const previewEyebrow = previewLocale === "ar" ? eyebrowAr || eyebrowEn : eyebrowEn;

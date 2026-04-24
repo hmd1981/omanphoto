@@ -16,12 +16,12 @@ export NEXT_PUBLIC_BUILD_TIME
 
 cd "$ROOT/docker"
 
-echo "=== docker compose build (build-arg only; compose .env ignored for stamps) ==="
+echo "=== docker compose build (profile ci; build-arg only; compose .env ignored for stamps) ==="
 echo "NEXT_PUBLIC_BUILD_ID=${NEXT_PUBLIC_BUILD_ID}"
 echo "NEXT_PUBLIC_BUILD_TIME=${NEXT_PUBLIC_BUILD_TIME}"
 
-docker compose build web \
+docker compose --profile ci build web \
   --build-arg "NEXT_PUBLIC_BUILD_ID=${NEXT_PUBLIC_BUILD_ID}" \
   --build-arg "NEXT_PUBLIC_BUILD_TIME=${NEXT_PUBLIC_BUILD_TIME}"
 
-docker compose up -d web
+docker compose --profile ci up -d web

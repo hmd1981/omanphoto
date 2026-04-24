@@ -14,17 +14,9 @@ const gray = (seed: string, w = 1600, h = 1000) =>
 
 async function main() {
   const adminPassword = process.env.ADMIN_PASSWORD;
-  if (!adminPassword || adminPassword.length < 12) {
-    console.error(
-      "FATAL: ADMIN_PASSWORD is missing or shorter than 12 characters.",
-    );
-    console.error(
-      "Add this to your .env file (see .env.example), then run npm run db:seed again:",
-    );
-    console.error('  ADMIN_PASSWORD="your-strong-password-at-least-12-chars"');
-    console.error(
-      "Or pass it once: ADMIN_PASSWORD='your-strong-password' npm run db:seed",
-    );
+  if (!adminPassword || adminPassword.length < 1) {
+    console.error("FATAL: ADMIN_PASSWORD is missing.");
+    console.error('Set it in .env or run: ADMIN_PASSWORD="admin" npm run db:seed');
     process.exit(1);
   }
 
@@ -271,6 +263,15 @@ async function main() {
       sortOrder: 10,
       url: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
     },
+    {
+      titleEn: "Production still",
+      titleAr: "صورة إنتاج",
+      type: MediaType.IMAGE,
+      categoryId: catRecords.find((c) => c.slug === "film")!.id,
+      featured: false,
+      sortOrder: 15,
+      url: gray("filmstill"),
+    },
   ];
 
   const mediaRows = [];
@@ -388,6 +389,24 @@ async function main() {
       where: { slug: s.slug },
       update: { ...s, published: true },
       create: { ...s, published: true },
+    });
+  }
+
+  const serviceCoverByMediaTitle: [string, string][] = [
+    ["wedding-photography", "Coastal ceremony"],
+    ["event-coverage", "Gala evening"],
+    ["industrial-photography", "Steel and shadow"],
+    ["commercial-photography", "Lookbook I"],
+    ["video-production", "Production still"],
+  ];
+
+  for (const [serviceSlug, mediaTitleEn] of serviceCoverByMediaTitle) {
+    const svc = await prisma.service.findUnique({ where: { slug: serviceSlug } });
+    const med = await prisma.media.findFirst({ where: { titleEn: mediaTitleEn } });
+    if (!svc || !med) continue;
+    await prisma.serviceMedia.deleteMany({ where: { serviceId: svc.id } });
+    await prisma.serviceMedia.create({
+      data: { serviceId: svc.id, mediaId: med.id, sortOrder: 0, active: true },
     });
   }
 
@@ -601,6 +620,59 @@ async function main() {
       sortOrder: 60,
     },
     {
+      pageKey: "ai_studio",
+      sectionKey: "page_kicker",
+      titleEn: "Tools",
+      titleAr: "أدوات",
+      sortOrder: 5,
+    },
+    {
+      pageKey: "ai_studio",
+      sectionKey: "hero_title",
+      titleEn: "AI Studio",
+      titleAr: "استوديو الذكاء الاصطناعي",
+      sortOrder: 10,
+    },
+    {
+      pageKey: "ai_studio",
+      sectionKey: "hero_subtitle",
+      sortOrder: 12,
+    },
+    {
+      pageKey: "ai_studio",
+      sectionKey: "hero_description",
+      bodyEn:
+        "A dedicated space for AI-assisted tooling inside Oman Photo’s editorial workflow.",
+      bodyAr: "صفحة مخصصة لدمج أدوات الذكاء الاصطناعي في مسار العمل التحريري لدى عمان فوتو.",
+      sortOrder: 15,
+    },
+    {
+      pageKey: "book",
+      sectionKey: "page_kicker",
+      titleEn: "Book",
+      titleAr: "الحجز",
+      sortOrder: 5,
+    },
+    {
+      pageKey: "book",
+      sectionKey: "hero_title",
+      titleEn: "Book",
+      titleAr: "الحجز",
+      sortOrder: 10,
+    },
+    {
+      pageKey: "book",
+      sectionKey: "hero_subtitle",
+      sortOrder: 12,
+    },
+    {
+      pageKey: "book",
+      sectionKey: "hero_description",
+      bodyEn: "Send a request through the contact form, or reach us directly.",
+      bodyAr: "أرسل الطلب عبر نموذج التواصل، أو راسلنا مباشرة.",
+      sortOrder: 15,
+    },
+    {
       pageKey: "seo",
       sectionKey: "default",
       titleEn: "Oman Photo — Photography & cinematic production",
@@ -666,6 +738,24 @@ async function main() {
         "لنبدأ حواراً حول مشروعك. مسقط وخارجها بموعد مسبق.",
       sortOrder: 60,
     },
+    {
+      pageKey: "seo",
+      sectionKey: "ai_studio",
+      titleEn: "AI Studio — Oman Photo",
+      titleAr: "استوديو الذكاء الاصطناعي — عُمان فوتو",
+      bodyEn: "AI-assisted workflows for photography and production at Oman Photo.",
+      bodyAr: "أدوات وخدمات الذكاء الاصطناعي لسير عمل التصوير والإنتاج.",
+      sortOrder: 65,
+    },
+    {
+      pageKey: "seo",
+      sectionKey: "book",
+      titleEn: "Book — Oman Photo",
+      titleAr: "الحجز — عُمان فوتو",
+      bodyEn: "Book a session or production with Oman Photo.",
+      bodyAr: "احجز جلسة أو إنتاجاً مع عُمان فوتو.",
+      sortOrder: 70,
+    },
   ];
 
   for (const p of pageBits) {
@@ -688,6 +778,8 @@ async function main() {
     { placement: PageHeroPlacement.SERVICES_HERO, sortOrder: 20 },
     { placement: PageHeroPlacement.ABOUT_HERO, sortOrder: 30 },
     { placement: PageHeroPlacement.CONTACT_HERO, sortOrder: 40 },
+    { placement: PageHeroPlacement.AI_STUDIO_HERO, sortOrder: 50 },
+    { placement: PageHeroPlacement.BOOK_HERO, sortOrder: 60 },
   ];
   for (const { placement, sortOrder } of pageHeroPlacements) {
     await prisma.pageHeroMedia.upsert({

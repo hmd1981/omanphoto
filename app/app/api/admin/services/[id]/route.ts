@@ -60,8 +60,14 @@ export async function PATCH(request: Request, ctx: Params) {
     update.descriptionAr = descriptionAr || descriptionEn;
   }
 
+  const before = await prisma.service.findUnique({ where: { id }, select: { slug: true } });
   const item = await prisma.service.update({ where: { id }, data: update });
-  revalidatePublicPages();
+  const prev = before?.slug;
+  const slugChanged = Boolean(prev && prev !== item.slug);
+  revalidatePublicPages({
+    serviceSlug: item.slug,
+    previousServiceSlug: slugChanged ? prev : undefined,
+  });
   return NextResponse.json({ item });
 }
 

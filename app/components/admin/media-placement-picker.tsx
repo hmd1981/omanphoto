@@ -55,10 +55,18 @@ export function MediaPlacementPicker({
   const [externalUrlInput, setExternalUrlInput] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [localItems, setLocalItems] = useState<MediaPickItem[]>([]);
+
+  const mediaPool = useMemo(() => {
+    const byId = new Map<string, MediaPickItem>();
+    for (const m of allMedia) byId.set(m.id, m);
+    for (const m of localItems) byId.set(m.id, { ...m, ...(byId.get(m.id) ?? {}) });
+    return Array.from(byId.values());
+  }, [allMedia, localItems]);
 
   const pool = useMemo(
-    () => allMedia.filter((m) => (mode === "image" ? m.type === MediaType.IMAGE : m.type === MediaType.VIDEO)),
-    [allMedia, mode],
+    () => mediaPool.filter((m) => (mode === "image" ? m.type === MediaType.IMAGE : m.type === MediaType.VIDEO)),
+    [mediaPool, mode],
   );
 
   const filteredPool = useMemo(() => {
@@ -67,7 +75,7 @@ export function MediaPlacementPicker({
     return pool.filter((m) => m.titleEn.toLowerCase().includes(q) || m.id.toLowerCase().includes(q));
   }, [pool, libraryFilter]);
 
-  const selected = useMemo(() => (mediaId ? allMedia.find((m) => m.id === mediaId) : undefined), [allMedia, mediaId]);
+  const selected = useMemo(() => (mediaId ? mediaPool.find((m) => m.id === mediaId) : undefined), [mediaPool, mediaId]);
 
   const sourceSummary = useMemo(() => {
     if (mode === "video" && videoExternalUsesHeroUrl && externalVideoUrl.trim()) {
@@ -95,6 +103,7 @@ export function MediaPlacementPicker({
       try {
         const title = `${uploadTitleSuffix} · ${mode === "image" ? "Image" : "Video"} · ${new Date().toISOString().slice(0, 10)}`;
         const item = await uploadFileAndCreateMedia(file, mode === "image" ? MediaType.IMAGE : MediaType.VIDEO, title);
+        setLocalItems((prev) => [...prev.filter((x) => x.id !== item.id), item]);
         onMediaIdChange(item.id);
         if (mode === "video" && onExternalVideoUrlChange) onExternalVideoUrlChange("");
         await onRefreshLibrary();
@@ -129,6 +138,7 @@ export function MediaPlacementPicker({
         mode === "image" ? MediaType.IMAGE : MediaType.VIDEO,
         title,
       );
+      setLocalItems((prev) => [...prev.filter((x) => x.id !== item.id), item]);
       onMediaIdChange(item.id);
       if (mode === "video" && onExternalVideoUrlChange) onExternalVideoUrlChange("");
       await onRefreshLibrary();
@@ -239,6 +249,13 @@ export function MediaPlacementPicker({
               </option>
             ))}
           </select>
+          {pool.length === 0 ? (
+            <p className="text-xs text-amber-200/80">
+              No {mode} media in the library yet. Use Upload or Link above to create one.
+            </p>
+          ) : filteredPool.length === 0 ? (
+            <p className="text-xs text-neutral-500">No library items match this filter.</p>
+          ) : null}
         </div>
       )}
 
