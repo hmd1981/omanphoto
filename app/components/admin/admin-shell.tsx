@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { LogoutButton } from "@/components/admin/logout-button";
 
-const links = [
+const adminLinks = [
   { href: "/admin", label: "Dashboard" },
   { href: "/admin/account", label: "Account" },
   { href: "/admin/site", label: "Site" },
@@ -12,6 +12,12 @@ const links = [
   { href: "/admin/services", label: "Services" },
   { href: "/admin/pages", label: "Page text" },
   { href: "/admin/inquiries", label: "Inquiries" },
+];
+
+/** Public site routes (not under /admin); default EN preview. */
+const publicSiteLinks = [
+  { href: "/en/ai-studio", label: "AI Studio" },
+  { href: "/en/book", label: "Book" },
 ];
 
 export function AdminShell({ children }: { children: React.ReactNode }) {
@@ -26,8 +32,19 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
             <span className="text-xs uppercase tracking-[0.25em] text-muted">Administration</span>
           </div>
           <div className="flex flex-wrap items-center gap-4">
-            {links.map((l) => (
+            {adminLinks.map((l) => (
               <Link key={l.href} href={l.href} className="text-xs uppercase tracking-[0.2em] text-muted hover:text-white">
+                {l.label}
+              </Link>
+            ))}
+            <span className="hidden h-3 w-px bg-white/20 md:inline-block" aria-hidden />
+            {publicSiteLinks.map((l) => (
+              <Link
+                key={l.href}
+                href={l.href}
+                className="text-xs uppercase tracking-[0.2em] text-white/70 hover:text-white"
+                title="Opens public site page"
+              >
                 {l.label}
               </Link>
             ))}
