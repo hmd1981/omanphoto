@@ -64,7 +64,12 @@ export async function middleware(request: NextRequest) {
   }
 
   if (pathname === "/") {
-    return NextResponse.redirect(new URL("/en", request.url));
+    // Preserve query string (e.g. ?utm_source=ads) so marketing attribution survives the redirect.
+    // The URL fragment (#hash) is never sent to the server, but per RFC 7231 the browser
+    // re-applies the original fragment to the redirect target automatically.
+    const url = request.nextUrl.clone();
+    url.pathname = "/en";
+    return NextResponse.redirect(url);
   }
 
   const hasLocale = pathname === "/en" || pathname === "/ar" || pathname.startsWith("/en/") || pathname.startsWith("/ar/");
