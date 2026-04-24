@@ -80,6 +80,24 @@ function PlacementCard({
   const [imageMediaId, setImageMediaId] = useState<string | null>(hero?.imageMediaId ?? null);
   const [videoMediaId, setVideoMediaId] = useState<string | null>(hero?.videoMediaId ?? null);
   const [videoUrl, setVideoUrl] = useState(hero?.videoUrl ?? "");
+
+  const handlePickImage = useCallback((id: string | null) => {
+    setImageMediaId(id);
+    if (id) setActive(true);
+  }, []);
+  const handlePickVideo = useCallback((id: string | null) => {
+    setVideoMediaId(id);
+    if (id) setActive(true);
+  }, []);
+  const handleExternalVideoUrl = useCallback((url: string) => {
+    setVideoUrl(url);
+    if (url.trim()) setActive(true);
+  }, []);
+
+  const hasMediaAssigned =
+    (mediaType === MediaType.IMAGE && Boolean(imageMediaId)) ||
+    (mediaType === MediaType.VIDEO && (Boolean(videoMediaId) || Boolean(videoUrl.trim())));
+  const willBeHiddenOnPublicSite = hasMediaAssigned && !active;
   const [msg, setMsg] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
@@ -169,6 +187,12 @@ function PlacementCard({
             <input type="checkbox" checked={active} onChange={(e) => setActive(e.target.checked)} className="accent-white" />
             <span>Active (show media on public page when assigned)</span>
           </label>
+          {willBeHiddenOnPublicSite ? (
+            <div className="border border-amber-700/60 bg-amber-950/20 px-4 py-3 text-xs text-amber-200">
+              You assigned a {mediaType === MediaType.VIDEO ? "video" : "picture"} but <strong>Active is off</strong>.
+              The public {meta.route} page will not show it. Tick <strong>Active</strong> above and Save.
+            </div>
+          ) : null}
           <label className="block">
             <span className="text-[10px] uppercase tracking-[0.2em] text-muted">Sort order</span>
             <input
@@ -195,7 +219,7 @@ function PlacementCard({
             <MediaPlacementPicker
               mode="image"
               mediaId={imageMediaId}
-              onMediaIdChange={setImageMediaId}
+              onMediaIdChange={handlePickImage}
               allMedia={allMedia}
               onRefreshLibrary={onRefreshMedia}
               placementTitle={`${meta.title} — background image`}
@@ -207,8 +231,8 @@ function PlacementCard({
               mode="video"
               mediaId={videoMediaId}
               externalVideoUrl={videoUrl}
-              onMediaIdChange={setVideoMediaId}
-              onExternalVideoUrlChange={setVideoUrl}
+              onMediaIdChange={handlePickVideo}
+              onExternalVideoUrlChange={handleExternalVideoUrl}
               allMedia={allMedia}
               onRefreshLibrary={onRefreshMedia}
               placementTitle={`${meta.title} — background video`}

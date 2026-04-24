@@ -68,11 +68,24 @@ export async function PATCH(request: Request) {
       ? emptyToNull(rest.videoUrl !== undefined ? rest.videoUrl : existing?.videoUrl ?? null)
       : null;
 
+  const hasMediaAssigned = Boolean(imageMediaId || videoMediaId || videoUrl);
+  const previousHadMedia = Boolean(
+    existing && (existing.imageMediaId || existing.videoMediaId || existing.videoUrl),
+  );
+  /**
+   * If media is being newly assigned (was empty, now has something) and the caller did not
+   * explicitly request inactive, force the row active. This avoids the "I picked a photo but
+   * nothing shows on the public site because the active checkbox was off" trap.
+   */
+  const autoActivate = hasMediaAssigned && !previousHadMedia && rest.active !== false;
+  const effectiveActiveOnUpdate =
+    rest.active !== undefined ? rest.active : autoActivate ? true : undefined;
+
   const item = await prisma.pageHeroMedia.upsert({
     where: { placement },
     create: {
       placement,
-      active: rest.active ?? true,
+      active: rest.active ?? hasMediaAssigned,
       sortOrder: rest.sortOrder ?? 0,
       mediaType,
       imageMediaId,
@@ -80,7 +93,7 @@ export async function PATCH(request: Request) {
       videoUrl,
     },
     update: {
-      ...(rest.active !== undefined ? { active: rest.active } : {}),
+      ...(effectiveActiveOnUpdate !== undefined ? { active: effectiveActiveOnUpdate } : {}),
       ...(rest.sortOrder !== undefined ? { sortOrder: rest.sortOrder } : {}),
       mediaType,
       imageMediaId,

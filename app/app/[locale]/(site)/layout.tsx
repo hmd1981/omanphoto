@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { AssistantWidget } from "@/components/assistant-widget";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { getSiteSettings } from "@/lib/data";
@@ -15,12 +16,14 @@ export default async function SiteLayout({
   if (!isLocale(raw)) notFound();
   const locale = raw as Locale;
   const settings = await getSiteSettings();
+  const assistantEnabled = process.env.NEXT_PUBLIC_ASSISTANT_ENABLED === "1";
 
   return (
     <div className="flex min-h-screen flex-col">
       <SiteHeader settings={settings} locale={locale} />
       <main className="min-h-[50vh]">{children}</main>
       <SiteFooter settings={settings} locale={locale} />
+      {assistantEnabled ? <AssistantWidget locale={locale} /> : null}
     </div>
   );
 }
