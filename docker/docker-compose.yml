@@ -20,6 +20,8 @@ services:
     build:
       context: ..
       dockerfile: docker/Dockerfile
+      # Prefer `docker/build-web.sh` or `docker compose build web --build-arg ...` so values are never
+      # lost to empty .env substitution. Fallbacks keep `docker compose build` without args usable.
       args:
         NEXT_PUBLIC_BUILD_ID: ${NEXT_PUBLIC_BUILD_ID:-unknown}
         NEXT_PUBLIC_BUILD_TIME: ${NEXT_PUBLIC_BUILD_TIME:-unknown}

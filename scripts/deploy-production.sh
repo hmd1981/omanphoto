@@ -19,8 +19,10 @@ if [[ -f "${ROOT}/.env.deploy" ]]; then
   set +a
 fi
 
-export NEXT_PUBLIC_BUILD_ID="$(cd "$ROOT" && git rev-parse --short HEAD 2>/dev/null || echo nogit)"
-export NEXT_PUBLIC_BUILD_TIME="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+NEXT_PUBLIC_BUILD_ID="$(cd "$ROOT" && git rev-parse --short HEAD 2>/dev/null || echo nogit)"
+NEXT_PUBLIC_BUILD_TIME="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+export NEXT_PUBLIC_BUILD_ID
+export NEXT_PUBLIC_BUILD_TIME
 
 {
   echo "========================================"
@@ -31,8 +33,10 @@ export NEXT_PUBLIC_BUILD_TIME="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 
 cd "${ROOT}/docker"
 
-echo "=== docker compose: build web ===" | tee -a "$LOG"
-docker compose build web
+echo "=== docker compose: build web (explicit --build-arg) ===" | tee -a "$LOG"
+docker compose build web \
+  --build-arg "NEXT_PUBLIC_BUILD_ID=${NEXT_PUBLIC_BUILD_ID}" \
+  --build-arg "NEXT_PUBLIC_BUILD_TIME=${NEXT_PUBLIC_BUILD_TIME}"
 
 echo "=== docker compose: up -d web ===" | tee -a "$LOG"
 docker compose up -d web
