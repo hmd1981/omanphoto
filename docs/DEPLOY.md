@@ -68,6 +68,26 @@ All three are now fixed:
 - `clean-full-redeploy.sh` calls `zero-downtime-deploy.sh` and fails if the public marker doesn't match the new build.
 - The legacy `web` container is removed, and the deploy script stops it again on every run.
 
+## Recovering from 502 (containers stopped mid-deploy)
+
+If you abort `clean-full-redeploy.sh` after Step 1 (`docker compose down`) but before
+Step 7 (`docker compose up -d`), every container will be stopped and `omanphoto.com`
+will return **502 Bad Gateway** (nginx has no upstream to talk to).
+
+Recovery is one command — it brings the existing built images back up:
+
+```bash
+cd /root/omanphoto/docker && docker compose up -d db web-blue web-green
+# wait ~15 seconds for migrate + next start
+bash /root/omanphoto/scripts/verify-prod-build.sh
+```
+
+If that doesn't get you back to 200, run the full deploy again (and let it finish):
+
+```bash
+cd /root/omanphoto && npm run deploy:clean
+```
+
 ## Rolling back
 
 The previous slot is left stopped, not removed. To roll back:

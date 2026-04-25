@@ -74,3 +74,85 @@ html[dir="rtl"] .font-display {
   outline: 1px solid rgb(222 218 208 / 0.35);
   outline-offset: 4px;
 }
+
+/* Site header brand lockup — subtle first-paint + hover (respects reduced motion) */
+@keyframes brand-monogram-in {
+  from {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes brand-word-in {
+  from {
+    opacity: 0;
+    letter-spacing: 0.36em;
+    transform: translateY(2px);
+  }
+  to {
+    opacity: 1;
+    letter-spacing: var(--brand-track-end, 0.2em);
+    transform: translateY(0);
+  }
+}
+
+@keyframes brand-underline-glint {
+  from {
+    transform: translateX(-130%) skewX(-11deg);
+    opacity: 0;
+  }
+  18% {
+    opacity: 0.5;
+  }
+  100% {
+    transform: translateX(230%) skewX(-11deg);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .brand-lockup-monogram {
+    opacity: 0;
+    animation: brand-monogram-in 0.85s var(--ease-editorial) forwards;
+    animation-delay: 0.04s;
+  }
+
+  .brand-lockup-word {
+    opacity: 0;
+    animation: brand-word-in 0.95s var(--ease-editorial) forwards;
+    animation-delay: 0.08s;
+  }
+
+  .header-brand-link:hover .brand-lockup-glint,
+  .header-brand-link:focus-visible .brand-lockup-glint {
+    animation: brand-underline-glint 0.95s var(--ease-editorial) both;
+  }
+}
+
+.brand-lockup-rule {
+  transform: scaleX(0);
+  transform-origin: inline-start;
+  transition: transform 0.75s var(--ease-editorial);
+}
+
+.header-brand-link:hover .brand-lockup-rule,
+.header-brand-link:focus-visible .brand-lockup-rule {
+  transform: scaleX(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .brand-lockup-monogram,
+  .brand-lockup-word {
+    opacity: 1;
+    animation: none;
+    transform: none;
+  }
+
+  .brand-lockup-rule {
+    transition: none;
+  }
+}

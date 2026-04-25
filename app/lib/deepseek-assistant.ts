@@ -29,6 +29,12 @@ export type AssistantPageContext = {
 export type AssistantContext = {
   locale: Locale;
   pageContext?: AssistantPageContext;
+  /**
+   * How many user-role messages have been sent in this session, including the
+   * current one. Used to escalate the system prompt: after 3+ turns we ask
+   * the model to summarize intent and *always* return a CTA action.
+   */
+  userTurnCount?: number;
 };
 
 export type AssistantSuggestedAction =
@@ -88,6 +94,27 @@ function buildSystemPrompt(ctx: AssistantContext): string {
     ? `\nVisitor is viewing service slug: ${ctx.pageContext.serviceSlug}`
     : "";
 
+  const turn = ctx.userTurnCount ?? 1;
+  // After 3+ user turns the visitor has shared enough — we must stop probing
+  // and route them. After 2 turns we may already nudge if intent is clear.
+  const escalationBlock =
+    turn >= 3
+      ? `
+ESCALATION — the visitor has now sent ${turn} messages in this session.
+Their intent should be clear by now. You MUST:
+1. Open your reply with one short sentence (max 14 words) that summarizes
+   what the visitor is looking for, in ${isAr ? "Arabic" : "English"}.
+2. Follow with one concrete next step that matches the routing rules above.
+3. The "action" field MUST NOT be null. Pick the single best routing key.
+   If unsure between two, prefer "contact" over "services".
+`.trim()
+      : turn === 2
+        ? `
+The visitor has sent 2 messages. If their intent is reasonably clear, set a
+non-null "action" now rather than asking another probing question.
+`.trim()
+        : "";
+
   const baseRules = `
 You are the Oman Photo sales assistant. Your tone is quiet, refined, professional —
 editorial, not salesy. Keep replies short (2–4 sentences), warm, and concrete.
@@ -139,6 +166,8 @@ Routing destinations (the system will turn your action into a localized link):
 - ai-studio   → /${ctx.locale}/ai-studio
 - services    → /${ctx.locale}/services
 ${pageHint}${serviceHint}
+
+${escalationBlock}
 
 OUTPUT FORMAT — STRICT.
 Reply with a single JSON object on one line, nothing else, no markdown fences:

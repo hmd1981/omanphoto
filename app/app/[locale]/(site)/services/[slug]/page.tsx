@@ -137,7 +137,7 @@ function HeroVisual({ media, alt }: { media: Media; alt: string }) {
   if (isExternalUrl(src)) {
     return (
       // eslint-disable-next-line @next/next/no-img-element
-      <img src={src} alt={alt} className="h-full w-full object-cover grayscale contrast-[1.02]" />
+      <img src={src} alt={alt} className="h-full w-full object-cover contrast-[1.02]" />
     );
   }
   return (
@@ -145,7 +145,7 @@ function HeroVisual({ media, alt }: { media: Media; alt: string }) {
       src={src}
       alt={alt}
       fill
-      className="object-cover grayscale contrast-[1.02]"
+      className="object-cover contrast-[1.02]"
       sizes="100vw"
       priority
       quality={90}
@@ -159,7 +159,7 @@ function GalleryImage({ media, title, priority }: { media: Media; title: string;
   if (isExternalUrl(src)) {
     return (
       // eslint-disable-next-line @next/next/no-img-element
-      <img src={src} alt={title} className="h-full w-full object-cover grayscale" />
+      <img src={src} alt={title} className="h-full w-full object-cover" />
     );
   }
   return (
@@ -167,7 +167,7 @@ function GalleryImage({ media, title, priority }: { media: Media; title: string;
       src={src}
       alt={title}
       fill
-      className="object-cover grayscale"
+      className="object-cover"
       sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
       loading={priority ? "eager" : "lazy"}
       priority={priority}

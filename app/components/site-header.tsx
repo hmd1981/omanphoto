@@ -30,9 +30,47 @@ export function SiteHeader({ settings, locale }: Props) {
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-6 py-7 md:gap-10 md:px-10 md:py-9">
         <Link
           href={localizedPath(locale, "/")}
-          className="font-display text-[1.35rem] tracking-[0.2em] text-ink-bright transition-opacity duration-300 hover:opacity-85 md:text-[1.65rem] md:tracking-[0.22em]"
+          className="header-brand-link group/header-brand focus-ring inline-flex min-w-0 items-center gap-2.5 text-ink-bright transition-opacity duration-300 hover:opacity-85 motion-reduce:transition-none md:gap-3"
         >
-          {brand}
+          <svg
+            className="brand-lockup-monogram shrink-0 text-ink-bright opacity-95 motion-reduce:opacity-100"
+            width="20"
+            height="25"
+            viewBox="0 0 20 25"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden
+          >
+            <ellipse
+              cx="8.85"
+              cy="9.65"
+              rx="3.95"
+              ry="4.15"
+              stroke="currentColor"
+              strokeWidth="0.85"
+              vectorEffect="non-scaling-stroke"
+            />
+            <path
+              d="M12.75 4.25v16.5M12.75 4.25c3.1 0 5.5 1.85 5.5 4.75s-2.4 4.75-5.5 4.75"
+              stroke="currentColor"
+              strokeWidth="0.85"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              vectorEffect="non-scaling-stroke"
+            />
+          </svg>
+          <span className="relative inline-block min-w-0 pb-[3px]">
+            <span className="brand-lockup-word font-display text-[1.35rem] tracking-[0.2em] text-ink-bright [--brand-track-end:0.2em] md:text-[1.65rem] md:tracking-[0.22em] md:[--brand-track-end:0.22em]">
+              {brand}
+            </span>
+            <span
+              className="brand-lockup-rule pointer-events-none absolute inset-x-0 bottom-0 h-px bg-ink-bright/22"
+              aria-hidden
+            />
+            <span className="pointer-events-none absolute inset-x-0 bottom-0 h-px overflow-hidden" aria-hidden>
+              <span className="brand-lockup-glint absolute start-[-30%] top-0 h-full w-[55%] bg-gradient-to-r from-transparent via-ink-bright/45 to-transparent motion-reduce:hidden" />
+            </span>
+          </span>
         </Link>
         <div className="flex items-center gap-6 md:gap-10">
           <nav className="hidden items-center gap-9 text-[11px] uppercase tracking-[0.3em] text-muted md:flex lg:gap-11">

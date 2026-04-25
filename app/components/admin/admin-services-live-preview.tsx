@@ -64,10 +64,10 @@ export function AdminServicesLivePreview({ viewport, services, locale }: Props) 
                   {src ? (
                     isExternalUrl(src) ? (
                       // eslint-disable-next-line @next/next/no-img-element
-                      <img src={src} alt="" className="h-full w-full object-cover grayscale" />
+                      <img src={src} alt="" className="h-full w-full object-cover" />
                     ) : (
                       // eslint-disable-next-line @next/next/no-img-element
-                      <img src={src} alt="" className="h-full w-full object-cover grayscale" />
+                      <img src={src} alt="" className="h-full w-full object-cover" />
                     )
                   ) : (
                     <div className="flex h-full w-full flex-col items-center justify-center gap-2 bg-gradient-to-b from-surface to-paper px-4 text-center">

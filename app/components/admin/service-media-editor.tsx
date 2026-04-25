@@ -116,9 +116,9 @@ export function ServiceMediaEditor({ serviceId, serviceTitleEn, initialRows, all
                 {src ? (
                   isExternalUrl(src) ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={src} alt="" className="h-full w-full object-cover grayscale" />
+                    <img src={src} alt="" className="h-full w-full object-cover" />
                   ) : (
-                    <Image src={src} alt="" fill className="object-cover grayscale" sizes="80px" />
+                    <Image src={src} alt="" fill className="object-cover" sizes="80px" />
                   )
                 ) : (
                   <div className="flex h-full w-full items-center justify-center text-[9px] text-muted">—</div>

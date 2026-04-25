@@ -58,7 +58,7 @@ function PageHeroMediaPanel({
       <div className="relative aspect-[4/5] w-full sm:aspect-[5/6] md:aspect-[16/11] lg:aspect-[16/10]">
         {visual.mode === "video" ? (
           <video
-            className="h-full w-full object-cover grayscale contrast-[1.02]"
+            className="h-full w-full object-cover contrast-[1.02]"
             src={visual.src}
             autoPlay
             muted
@@ -71,14 +71,14 @@ function PageHeroMediaPanel({
           <img
             src={visual.src}
             alt=""
-            className="h-full w-full object-cover grayscale contrast-[1.02]"
+            className="h-full w-full object-cover contrast-[1.02]"
           />
         ) : (
           <Image
             src={visual.src}
             alt=""
             fill
-            className="object-cover grayscale contrast-[1.02]"
+            className="object-cover contrast-[1.02]"
             sizes="(min-width: 1024px) 42vw, 100vw"
             priority
             quality={88}

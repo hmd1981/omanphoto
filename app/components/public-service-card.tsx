@@ -103,7 +103,7 @@ function ServiceCoverVisual({ media, alt }: { media: Media; alt: string }) {
   if (isExternalUrl(src)) {
     return (
       // eslint-disable-next-line @next/next/no-img-element
-      <img src={src} alt="" className="h-full w-full object-cover grayscale contrast-[1.02] transition duration-[900ms] ease-out group-hover:scale-[1.02]" />
+      <img src={src} alt="" className="h-full w-full object-cover contrast-[1.02] transition duration-[900ms] ease-out group-hover:scale-[1.02]" />
     );
   }
   return (
@@ -111,7 +111,7 @@ function ServiceCoverVisual({ media, alt }: { media: Media; alt: string }) {
       src={src}
       alt={alt}
       fill
-      className="object-cover grayscale contrast-[1.02] transition duration-[900ms] ease-out group-hover:scale-[1.02]"
+      className="object-cover contrast-[1.02] transition duration-[900ms] ease-out group-hover:scale-[1.02]"
       sizes="(min-width: 1024px) 38vw, 100vw"
       quality={88}
     />

@@ -20,6 +20,59 @@ type ApiResponse = {
   error?: string;
 };
 
+// Hard cap for the rolling window we keep in sessionStorage and send to the
+// server. Total messages (user + assistant combined). Matches HISTORY_MAX in
+// /api/assistant. Keep these two in sync.
+const MAX_HISTORY = 8;
+const STORAGE_VERSION = "v1";
+
+function storageKey(locale: Locale): string {
+  return `omanphoto:assistant:${STORAGE_VERSION}:${locale}`;
+}
+
+function isChatTurn(value: unknown): value is ChatTurn {
+  if (!value || typeof value !== "object") return false;
+  const t = value as Record<string, unknown>;
+  if (t.role !== "user" && t.role !== "assistant") return false;
+  if (typeof t.content !== "string" || !t.content.trim()) return false;
+  if (t.cta && typeof t.cta === "object") {
+    const cta = t.cta as Record<string, unknown>;
+    const action = cta.action;
+    const href = cta.href;
+    const validAction =
+      action === "contact" ||
+      action === "book" ||
+      action === "ai-studio" ||
+      action === "services";
+    if (!validAction || typeof href !== "string") return false;
+  }
+  return true;
+}
+
+function loadStoredTurns(locale: Locale): ChatTurn[] | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = window.sessionStorage.getItem(storageKey(locale));
+    if (!raw) return null;
+    const parsed: unknown = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return null;
+    const turns = parsed.filter(isChatTurn).slice(-MAX_HISTORY);
+    return turns.length ? turns : null;
+  } catch {
+    return null;
+  }
+}
+
+function saveStoredTurns(locale: Locale, turns: ChatTurn[]): void {
+  if (typeof window === "undefined") return;
+  try {
+    const trimmed = turns.slice(-MAX_HISTORY);
+    window.sessionStorage.setItem(storageKey(locale), JSON.stringify(trimmed));
+  } catch {
+    // Quota exceeded or storage disabled — fail silently.
+  }
+}
+
 const COPY = {
   en: {
     open: "Need help?",
@@ -68,9 +121,13 @@ export function AssistantWidget({ locale }: { locale: Locale }) {
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
+  // We start with the static greeting on the server render so SSR and the
+  // first client paint match. Stored history (if any) is hydrated in an
+  // effect below to avoid hydration mismatches.
   const [turns, setTurns] = useState<ChatTurn[]>([
     { role: "assistant", content: t.initial },
   ]);
+  const [hydrated, setHydrated] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const panelId = useId();
@@ -83,6 +140,23 @@ export function AssistantWidget({ locale }: { locale: Locale }) {
       pageContextRef.current.path = window.location.pathname;
     }
   }, []);
+
+  // Hydrate from sessionStorage on mount. Runs once per locale.
+  useEffect(() => {
+    const stored = loadStoredTurns(locale);
+    if (stored && stored.length > 0) {
+      // Drop the static greeting if we have real history; otherwise keep it.
+      setTurns(stored);
+    }
+    setHydrated(true);
+  }, [locale]);
+
+  // Persist whenever turns change, but only after hydration so we never
+  // overwrite stored history with the bare initial greeting on first paint.
+  useEffect(() => {
+    if (!hydrated) return;
+    saveStoredTurns(locale, turns);
+  }, [turns, hydrated, locale]);
 
   useEffect(() => {
     if (open) {
@@ -100,15 +174,24 @@ export function AssistantWidget({ locale }: { locale: Locale }) {
     const message = input.trim();
     if (!message || busy) return;
     setError(null);
+    // Append the user's message immediately so it survives a refresh even if
+    // the network call fails. The trim to MAX_HISTORY happens on persist.
     const nextTurns: ChatTurn[] = [...turns, { role: "user", content: message }];
     setTurns(nextTurns);
     setInput("");
     setBusy(true);
 
+    // Build the rolling history we'll send to the server. We drop:
+    //  - the user message we just appended (it goes in `message`, not history)
+    //  - the static initial greeting (UI-only, no real context for the model)
+    // and cap to MAX_HISTORY - 1 so the server-side total stays <= MAX_HISTORY
+    // once the current message is added.
+    const isInitialGreeting = (t: ChatTurn, idx: number) =>
+      idx === 0 && t.role === "assistant" && t.content === COPY[locale].initial;
     const history = nextTurns
       .slice(0, -1)
-      .filter((t) => t.role === "user" || t.role === "assistant")
-      .slice(-8)
+      .filter((t, i) => !isInitialGreeting(t, i))
+      .slice(-(MAX_HISTORY - 1))
       .map((t) => ({ role: t.role, content: t.content }));
 
     try {

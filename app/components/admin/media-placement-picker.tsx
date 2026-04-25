@@ -310,7 +310,7 @@ export function MediaPlacementPicker({
               <video className="h-full w-full object-cover" src={thumbSrc} muted playsInline preload="metadata" />
             ) : (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={thumbSrc} alt="" className="h-full w-full object-cover grayscale" />
+              <img src={thumbSrc} alt="" className="h-full w-full object-cover" />
             )}
           </div>
           <div className="min-w-0 text-[11px] text-neutral-400">

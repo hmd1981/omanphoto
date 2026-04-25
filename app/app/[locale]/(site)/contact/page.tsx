@@ -159,7 +159,7 @@ export default async function ContactPage({
             />
             <iframe
               src={links.mapEmbedUrl}
-              className="aspect-[4/3] min-h-[220px] w-full grayscale contrast-[1.02] sm:min-h-[280px] md:aspect-[21/9] md:min-h-[300px]"
+              className="aspect-[4/3] min-h-[220px] w-full contrast-[1.02] sm:min-h-[280px] md:aspect-[21/9] md:min-h-[300px]"
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
               allowFullScreen

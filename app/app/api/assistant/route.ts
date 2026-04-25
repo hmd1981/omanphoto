@@ -73,12 +73,25 @@ export async function POST(request: Request) {
 
   const { locale, message, history, pageContext } = parsed.data;
 
+  // Build the conversation we send upstream. The history is already capped
+  // to 8 by the schema; together with the current message we stay <= 9, but
+  // the client always trims to MAX_HISTORY-1 so total <= 8 in practice.
   const messages: AssistantMessage[] = [
     ...(history ?? []),
     { role: "user", content: message },
   ];
 
-  const result = await callDeepSeekAssistant(messages, { locale, pageContext });
+  // How many user-role turns has this visitor sent in this session, including
+  // the current one? Drives both the system-prompt escalation and the
+  // server-side CTA fallback below.
+  const userTurnCount =
+    (history ?? []).filter((m) => m.role === "user").length + 1;
+
+  const result = await callDeepSeekAssistant(messages, {
+    locale,
+    pageContext,
+    userTurnCount,
+  });
 
   if (!result.ok) {
     if (result.error === "missing_api_key") {
@@ -95,11 +108,19 @@ export async function POST(request: Request) {
     );
   }
 
+  // Safety net: after 3+ user turns we promised the visitor a clear next
+  // step. If the model still refused to pick an action, default to /contact
+  // so the user is never left without a route.
+  let suggestedAction = result.suggestedAction;
+  if (!suggestedAction && userTurnCount >= 3) {
+    suggestedAction = "contact";
+  }
+
   logEvent("ok");
   return NextResponse.json({
     ok: true,
     reply: result.reply,
-    suggestedAction: result.suggestedAction,
-    suggestedHref: result.suggestedAction ? ctaHrefFor(result.suggestedAction, locale) : undefined,
+    suggestedAction,
+    suggestedHref: suggestedAction ? ctaHrefFor(suggestedAction, locale) : undefined,
   });
 }

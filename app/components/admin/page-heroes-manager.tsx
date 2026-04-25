@@ -41,7 +41,7 @@ function PreviewPanel({ hero }: { hero: HeroRow }) {
   if (v.mode === "video") {
     return (
       <div className="relative aspect-[16/10] w-full overflow-hidden border border-line/40 bg-black">
-        <video className="h-full w-full object-cover grayscale" src={v.src} muted loop playsInline autoPlay />
+        <video className="h-full w-full object-cover" src={v.src} muted loop playsInline autoPlay />
       </div>
     );
   }
@@ -49,14 +49,14 @@ function PreviewPanel({ hero }: { hero: HeroRow }) {
     return (
       <div className="relative aspect-[16/10] w-full overflow-hidden border border-line/40 bg-black">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={v.src} alt="" className="h-full w-full object-cover grayscale" />
+        <img src={v.src} alt="" className="h-full w-full object-cover" />
       </div>
     );
   }
   return (
     <div className="relative aspect-[16/10] w-full overflow-hidden border border-line/40 bg-black">
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={v.src} alt="" className="h-full w-full object-cover grayscale" />
+      <img src={v.src} alt="" className="h-full w-full object-cover" />
     </div>
   );
 }
