@@ -63,6 +63,10 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+  if (pathname === "/sitemap.xml" || pathname === "/robots.txt") {
+    return NextResponse.next();
+  }
+
   if (pathname === "/") {
     // Preserve query string (e.g. ?utm_source=ads) so marketing attribution survives the redirect.
     // The URL fragment (#hash) is never sent to the server, but per RFC 7231 the browser
