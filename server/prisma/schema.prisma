@@ -55,6 +55,7 @@ model Media {
   pageHeroImageSlots PageHeroMedia[] @relation("PageHeroImageMedia")
   pageHeroVideoSlots PageHeroMedia[] @relation("PageHeroVideoMedia")
   serviceLinks       ServiceMedia[]
+  journalCovers      JournalPost[]  @relation("JournalCoverMedia")
 }
 
 enum PageHeroPlacement {
@@ -102,17 +103,44 @@ model HeroSettings {
 }
 
 model Service {
-  id            String         @id @default(cuid())
-  titleEn       String
-  titleAr       String
-  slug          String         @unique
-  descriptionEn String         @db.Text
-  descriptionAr String         @db.Text
-  sortOrder     Int            @default(0)
-  published     Boolean        @default(true)
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  serviceMedia  ServiceMedia[]
+  id              String         @id @default(cuid())
+  titleEn         String
+  titleAr         String
+  slug            String         @unique
+  descriptionEn   String         @db.Text
+  descriptionAr   String         @db.Text
+  /** Process, deliverables, and scope — shown on the public service detail page. */
+  extendedBodyEn  String?        @db.Text
+  extendedBodyAr  String?        @db.Text
+  /** FAQ blocks as `Q: question\nA: answer` paragraphs separated by blank lines. */
+  faqEn           String?        @db.Text
+  faqAr           String?        @db.Text
+  sortOrder       Int            @default(0)
+  published       Boolean        @default(true)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  serviceMedia    ServiceMedia[]
+}
+
+/** Editorial articles for the public Journal — improves substantive site content. */
+model JournalPost {
+  id           String    @id @default(cuid())
+  slug         String    @unique
+  titleEn      String
+  titleAr      String
+  excerptEn    String?   @db.Text
+  excerptAr    String?   @db.Text
+  bodyEn       String    @db.Text
+  bodyAr       String    @db.Text
+  coverMediaId String?
+  coverMedia   Media?    @relation("JournalCoverMedia", fields: [coverMediaId], references: [id], onDelete: SetNull)
+  published    Boolean   @default(true)
+  publishedAt  DateTime  @default(now())
+  sortOrder    Int       @default(0)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([published, publishedAt(sort: Desc)])
 }
 
 /** Ordered gallery for a service; first active image is the services-page cover. */

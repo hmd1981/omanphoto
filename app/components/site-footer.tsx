@@ -32,6 +32,12 @@ export function SiteFooter({ settings, locale }: Props) {
         <div className="flex flex-col gap-6 text-[11px] uppercase tracking-[0.3em] text-muted md:items-end">
           <p className="flex flex-wrap gap-x-6 gap-y-2 md:justify-end">
             <Link
+              href={localizedPath(locale, "/journal")}
+              className="text-ink-muted transition-colors duration-300 hover:text-ink-bright"
+            >
+              {u.footerJournal}
+            </Link>
+            <Link
               href={localizedPath(locale, "/ai-studio")}
               className="text-ink-muted transition-colors duration-300 hover:text-ink-bright"
             >
@@ -42,6 +48,18 @@ export function SiteFooter({ settings, locale }: Props) {
               className="text-ink-muted transition-colors duration-300 hover:text-ink-bright"
             >
               {u.footerBooking}
+            </Link>
+            <Link
+              href={localizedPath(locale, "/privacy")}
+              className="text-ink-muted transition-colors duration-300 hover:text-ink-bright"
+            >
+              {u.footerPrivacy}
+            </Link>
+            <Link
+              href={localizedPath(locale, "/terms")}
+              className="text-ink-muted transition-colors duration-300 hover:text-ink-bright"
+            >
+              {u.footerTerms}
             </Link>
           </p>
           <Link

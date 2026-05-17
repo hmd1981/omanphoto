@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { MediaType, type Media } from "@prisma/client";
 import { getPublishedServiceBySlug } from "@/lib/data";
+import { parseFaqBlocks } from "@/lib/faq";
 import { localizedPath, mediaTitle, pickText, serviceDescription, serviceTitle, type Locale } from "@/lib/locale";
 import { isLocale } from "@/lib/locale";
 import { isExternalUrl, resolveMediaSrc } from "@/lib/media-url";
@@ -55,6 +56,8 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
   const u = ui(locale);
   const title = serviceTitle(locale, service);
   const description = serviceDescription(locale, service);
+  const extendedBody = pickText(locale, service.extendedBodyEn, service.extendedBodyAr);
+  const faq = parseFaqBlocks(pickText(locale, service.faqEn, service.faqAr));
   const servicesHref = localizedPath(locale, "/services");
   const bookHref = `${localizedPath(locale, "/book")}?service=${encodeURIComponent(service.slug)}`;
 
@@ -100,6 +103,29 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
           </Link>
         </div>
       </header>
+
+      {extendedBody ? (
+        <section className="mt-16 max-w-3xl border-t border-line/60 pt-14 md:mt-20 md:pt-16">
+          <h2 className="text-[10px] uppercase tracking-[0.38em] text-muted">{u.serviceProcessHeading}</h2>
+          <div className="mt-8 whitespace-pre-line text-sm font-light leading-[1.92] text-ink-muted md:text-[0.9375rem]">
+            {extendedBody}
+          </div>
+        </section>
+      ) : null}
+
+      {faq.length > 0 ? (
+        <section className="mt-16 max-w-3xl border-t border-line/60 pt-14 md:mt-20 md:pt-16">
+          <h2 className="text-[10px] uppercase tracking-[0.38em] text-muted">{u.serviceFaqHeading}</h2>
+          <dl className="mt-8 space-y-8">
+            {faq.map((item, i) => (
+              <div key={i}>
+                <dt className="font-display text-base font-medium text-ink-bright md:text-lg">{item.question}</dt>
+                <dd className="mt-3 text-sm font-light leading-[1.9] text-ink-muted">{item.answer}</dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+      ) : null}
 
       {galleryRows.length > 0 ? (
         <section className="mt-20 border-t border-line/60 pt-16 md:mt-28 md:pt-20">

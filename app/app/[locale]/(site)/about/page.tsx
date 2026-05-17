@@ -29,10 +29,14 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
     getPageHeroMedia(PageHeroPlacement.ABOUT_HERO),
   ]);
   const story = pickPageContent(locale, about["story"]);
-  const detail1 = pickPageContent(locale, about["detail_1"]);
-  const detail2 = pickPageContent(locale, about["detail_2"]);
   const aside = pickPageContent(locale, about["aside_practice"]);
   const kicker = pickPageContent(locale, about["page_kicker"]);
+
+  const detailSections = Object.entries(about)
+    .filter(([key]) => key.startsWith("detail_"))
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([, row]) => pickPageContent(locale, row))
+    .filter((block) => block.body);
 
   return (
     <>
@@ -52,9 +56,10 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
           {story.body ? (
             <p className="editorial-prose text-lg font-light md:text-xl">{story.body}</p>
           ) : null}
-          <div className="mt-20 space-y-10 text-sm font-light leading-[1.9] text-ink-muted">
-            {detail1.body ? <p>{detail1.body}</p> : null}
-            {detail2.body ? <p>{detail2.body}</p> : null}
+          <div className="mt-20 space-y-10 text-sm font-light leading-[1.9] text-ink-muted md:text-[0.9375rem]">
+            {detailSections.map((block, i) => (
+              <p key={i}>{block.body}</p>
+            ))}
           </div>
         </div>
         <aside className="md:col-span-5">

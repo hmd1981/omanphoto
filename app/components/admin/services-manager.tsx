@@ -13,6 +13,10 @@ type Service = {
   slug: string;
   descriptionEn: string;
   descriptionAr: string;
+  extendedBodyEn: string | null;
+  extendedBodyAr: string | null;
+  faqEn: string | null;
+  faqAr: string | null;
   sortOrder: number;
   published: boolean;
   serviceMedia?: ServiceMediaRow[];
@@ -26,6 +30,10 @@ export function ServicesManager() {
     slug: "",
     descriptionEn: "",
     descriptionAr: "",
+    extendedBodyEn: "",
+    extendedBodyAr: "",
+    faqEn: "",
+    faqAr: "",
     sortOrder: 0,
     published: true,
   });
@@ -72,6 +80,10 @@ export function ServicesManager() {
                 slug: newRow.slug,
                 descriptionEn: newRow.descriptionEn,
                 descriptionAr: newRow.descriptionAr,
+                extendedBodyEn: newRow.extendedBodyEn || undefined,
+                extendedBodyAr: newRow.extendedBodyAr || undefined,
+                faqEn: newRow.faqEn || undefined,
+                faqAr: newRow.faqAr || undefined,
                 sortOrder: newRow.sortOrder,
                 published: newRow.published,
               }),
@@ -82,6 +94,10 @@ export function ServicesManager() {
               slug: "",
               descriptionEn: "",
               descriptionAr: "",
+              extendedBodyEn: "",
+              extendedBodyAr: "",
+              faqEn: "",
+              faqAr: "",
               sortOrder: 0,
               published: true,
             });
@@ -139,6 +155,15 @@ export function ServicesManager() {
                 dir="rtl"
               />
             </label>
+            <ServiceExtendedFields
+              row={{
+                extendedBodyEn: newRow.extendedBodyEn,
+                extendedBodyAr: newRow.extendedBodyAr,
+                faqEn: newRow.faqEn,
+                faqAr: newRow.faqAr,
+              }}
+              onChange={(p) => setNewRow((s) => ({ ...s, ...p }))}
+            />
             <label className="block">
               <span className="text-xs uppercase tracking-[0.2em] text-muted">Sort</span>
               <input
@@ -179,6 +204,10 @@ export function ServicesManager() {
                     slug: s.slug,
                     descriptionEn: s.descriptionEn,
                     descriptionAr: s.descriptionAr,
+                    extendedBodyEn: s.extendedBodyEn,
+                    extendedBodyAr: s.extendedBodyAr,
+                    faqEn: s.faqEn,
+                    faqAr: s.faqAr,
                     sortOrder: s.sortOrder,
                     published: s.published,
                   }),
@@ -234,6 +263,15 @@ export function ServicesManager() {
                     dir="rtl"
                   />
                 </label>
+                <ServiceExtendedFields
+                  row={{
+                    extendedBodyEn: s.extendedBodyEn ?? "",
+                    extendedBodyAr: s.extendedBodyAr ?? "",
+                    faqEn: s.faqEn ?? "",
+                    faqAr: s.faqAr ?? "",
+                  }}
+                  onChange={(p) => patch(s.id, p)}
+                />
               </div>
 
               <div className="mt-8 border border-amber-900/40 bg-amber-950/15 px-4 py-5">
@@ -330,5 +368,63 @@ export function ServicesManager() {
         </AdminPreviewFrame>
       </div>
     </div>
+  );
+}
+
+function ServiceExtendedFields({
+  row,
+  onChange,
+}: {
+  row: {
+    extendedBodyEn: string;
+    extendedBodyAr: string;
+    faqEn: string;
+    faqAr: string;
+  };
+  onChange: (p: Partial<typeof row>) => void;
+}) {
+  const inputCls = "mt-2 w-full border border-line bg-black px-3 py-2 text-sm";
+  return (
+    <>
+      <label className="block md:col-span-2">
+        <span className="text-xs uppercase tracking-[0.2em] text-muted">Process & deliverables (English)</span>
+        <textarea
+          value={row.extendedBodyEn}
+          onChange={(e) => onChange({ extendedBodyEn: e.target.value })}
+          rows={6}
+          className={inputCls}
+          placeholder="Paragraphs separated by blank lines"
+        />
+      </label>
+      <label className="block md:col-span-2">
+        <span className="text-xs uppercase tracking-[0.2em] text-muted">Process & deliverables (Arabic)</span>
+        <textarea
+          value={row.extendedBodyAr}
+          onChange={(e) => onChange({ extendedBodyAr: e.target.value })}
+          rows={6}
+          className={inputCls}
+          dir="rtl"
+        />
+      </label>
+      <label className="block md:col-span-2">
+        <span className="text-xs uppercase tracking-[0.2em] text-muted">FAQ (English) — Q: … / A: … blocks</span>
+        <textarea
+          value={row.faqEn}
+          onChange={(e) => onChange({ faqEn: e.target.value })}
+          rows={5}
+          className={inputCls}
+        />
+      </label>
+      <label className="block md:col-span-2">
+        <span className="text-xs uppercase tracking-[0.2em] text-muted">FAQ (Arabic)</span>
+        <textarea
+          value={row.faqAr}
+          onChange={(e) => onChange({ faqAr: e.target.value })}
+          rows={5}
+          className={inputCls}
+          dir="rtl"
+        />
+      </label>
+    </>
   );
 }

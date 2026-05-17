@@ -1,5 +1,6 @@
 import { PageHeroPlacement, PrismaClient, MediaType } from "@prisma/client";
 import bcrypt from "bcryptjs";
+import { journalPostSeeds, serviceExtendedContent, supplementalPageBits } from "./seed-content";
 
 const prisma = new PrismaClient();
 
@@ -385,10 +386,19 @@ async function main() {
   ];
 
   for (const s of services) {
+    const extra = serviceExtendedContent[s.slug];
     await prisma.service.upsert({
       where: { slug: s.slug },
-      update: { ...s, published: true },
-      create: { ...s, published: true },
+      update: {
+        ...s,
+        published: true,
+        ...(extra ?? {}),
+      },
+      create: {
+        ...s,
+        published: true,
+        ...(extra ?? {}),
+      },
     });
   }
 
@@ -758,7 +768,9 @@ async function main() {
     },
   ];
 
-  for (const p of pageBits) {
+  const allPageBits = [...pageBits, ...supplementalPageBits];
+
+  for (const p of allPageBits) {
     await prisma.pageContent.upsert({
       where: { pageKey_sectionKey: { pageKey: p.pageKey, sectionKey: p.sectionKey } },
       update: {
@@ -770,6 +782,29 @@ async function main() {
         published: true,
       },
       create: { ...p, published: true },
+    });
+  }
+
+  const coverForJournal = mediaRows[0];
+  for (const j of journalPostSeeds) {
+    await prisma.journalPost.upsert({
+      where: { slug: j.slug },
+      update: {
+        titleEn: j.titleEn,
+        titleAr: j.titleAr,
+        excerptEn: j.excerptEn,
+        excerptAr: j.excerptAr,
+        bodyEn: j.bodyEn,
+        bodyAr: j.bodyAr,
+        sortOrder: j.sortOrder,
+        published: true,
+        coverMediaId: coverForJournal?.id ?? null,
+      },
+      create: {
+        ...j,
+        published: true,
+        coverMediaId: coverForJournal?.id ?? null,
+      },
     });
   }
 

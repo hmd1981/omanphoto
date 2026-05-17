@@ -10,6 +10,7 @@ const adminLinks = [
   { href: "/admin/categories", label: "Categories" },
   { href: "/admin/media", label: "Galleries" },
   { href: "/admin/services", label: "Services" },
+  { href: "/admin/journal", label: "Journal" },
   { href: "/admin/pages", label: "Page text" },
   { href: "/admin/inquiries", label: "Inquiries" },
 ];

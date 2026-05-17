@@ -30,24 +30,19 @@ export default async function AiStudioPage({ params }: { params: Promise<{ local
     getPageHeroMedia(PageHeroPlacement.AI_STUDIO_HERO),
   ]);
 
-  const kickerRow = sections["page_kicker"];
-  const titleRow = sections["hero_title"];
-  const subtitleRow = sections["hero_subtitle"];
-  const descriptionRow = sections["hero_description"];
-
   const kicker =
-    pickTextWithOptionalFallback(locale, kickerRow?.titleEn, kickerRow?.titleAr) ||
+    pickTextWithOptionalFallback(locale, sections["page_kicker"]?.titleEn, sections["page_kicker"]?.titleAr) ||
     (locale === "ar" ? "أدوات" : "Tools");
   const title =
-    pickTextWithOptionalFallback(locale, titleRow?.titleEn, titleRow?.titleAr) ||
+    pickTextWithOptionalFallback(locale, sections["hero_title"]?.titleEn, sections["hero_title"]?.titleAr) ||
     (locale === "ar" ? "استوديو الذكاء الاصطناعي" : "AI Studio");
-  const subtitlePick = pickPageContent(locale, subtitleRow);
+  const subtitlePick = pickPageContent(locale, sections["hero_subtitle"]);
   const subtitle = subtitlePick.title || subtitlePick.body;
-  const description =
-    pickTextWithOptionalFallback(locale, descriptionRow?.bodyEn, descriptionRow?.bodyAr) ||
-    (locale === "ar"
-      ? "صفحة مخصصة لدمج أدوات الذكاء الاصطناعي في مسار العمل التحريري لدى عمان فوتو."
-      : "A dedicated space for AI-assisted tooling inside Oman Photo’s editorial workflow.");
+  const description = pickPageContent(locale, sections["hero_description"]);
+
+  const bodySections = ["workflow", "assistant", "limitations"]
+    .map((key) => ({ key, block: pickPageContent(locale, sections[key]) }))
+    .filter(({ block }) => block.title || block.body);
 
   const footerNote =
     locale === "ar"
@@ -71,12 +66,31 @@ export default async function AiStudioPage({ params }: { params: Promise<{ local
               {subtitle}
             </p>
           ) : null}
-          {description ? (
+          {description.body ? (
             <p className="editorial-prose mt-10 max-w-xl text-base font-light leading-relaxed text-ink-muted md:mt-12 md:text-lg">
-              {description}
+              {description.body}
             </p>
           ) : null}
         </header>
+
+        {bodySections.length > 0 ? (
+          <div className="mt-16 max-w-3xl space-y-12 border-t border-line/50 pt-16 md:mt-20 md:space-y-14 md:pt-20">
+            {bodySections.map(({ key, block }) => (
+              <section key={key}>
+                {block.title ? (
+                  <h2 className="font-display text-xl font-medium tracking-[-0.02em] text-ink-bright md:text-2xl">
+                    {block.title}
+                  </h2>
+                ) : null}
+                {block.body ? (
+                  <p className="mt-5 whitespace-pre-line text-sm font-light leading-[1.9] text-ink-muted md:text-[0.9375rem]">
+                    {block.body}
+                  </p>
+                ) : null}
+              </section>
+            ))}
+          </div>
+        ) : null}
 
         <div className="mt-16 max-w-xl border-t border-line/50 pt-12 text-sm font-light leading-relaxed text-ink-muted md:mt-20 md:pt-16">
           <p>{footerNote}</p>

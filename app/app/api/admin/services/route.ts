@@ -17,6 +17,10 @@ const createSchema = z.object({
   description: z.string().min(1).optional(),
   sortOrder: z.number().int().optional(),
   published: z.boolean().optional(),
+  extendedBodyEn: z.string().optional(),
+  extendedBodyAr: z.string().optional(),
+  faqEn: z.string().optional(),
+  faqAr: z.string().optional(),
 });
 
 export async function GET() {
@@ -61,6 +65,10 @@ export async function POST(request: Request) {
       descriptionAr: descriptionAr || descriptionEn,
       sortOrder: d.sortOrder ?? 0,
       published: d.published ?? true,
+      extendedBodyEn: d.extendedBodyEn ?? null,
+      extendedBodyAr: d.extendedBodyAr ?? null,
+      faqEn: d.faqEn ?? null,
+      faqAr: d.faqAr ?? null,
     },
   });
   revalidatePublicPages();

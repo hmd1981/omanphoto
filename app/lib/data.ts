@@ -132,6 +132,23 @@ export async function getFeaturedMediaForHome(limit = 6) {
   });
 }
 
+export async function getPublishedJournalPosts() {
+  noStore();
+  return prisma.journalPost.findMany({
+    where: { published: true },
+    orderBy: [{ sortOrder: "asc" }, { publishedAt: "desc" }],
+    include: { coverMedia: true },
+  });
+}
+
+export async function getPublishedJournalPostBySlug(slug: string) {
+  noStore();
+  return prisma.journalPost.findFirst({
+    where: { slug, published: true },
+    include: { coverMedia: true },
+  });
+}
+
 export async function getCategoryCoverMap() {
   noStore();
   const categories = await getPublishedCategories();

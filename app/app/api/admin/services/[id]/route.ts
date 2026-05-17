@@ -19,6 +19,10 @@ const patchSchema = z.object({
   description: z.string().min(1).optional(),
   sortOrder: z.number().int().optional(),
   published: z.boolean().optional(),
+  extendedBodyEn: z.string().nullable().optional(),
+  extendedBodyAr: z.string().nullable().optional(),
+  faqEn: z.string().nullable().optional(),
+  faqAr: z.string().nullable().optional(),
 });
 
 type Params = { params: Promise<{ id: string }> };
@@ -37,6 +41,10 @@ export async function PATCH(request: Request, ctx: Params) {
   if (d.slug !== undefined) update.slug = d.slug;
   if (d.sortOrder !== undefined) update.sortOrder = d.sortOrder;
   if (d.published !== undefined) update.published = d.published;
+  if (d.extendedBodyEn !== undefined) update.extendedBodyEn = d.extendedBodyEn;
+  if (d.extendedBodyAr !== undefined) update.extendedBodyAr = d.extendedBodyAr;
+  if (d.faqEn !== undefined) update.faqEn = d.faqEn;
+  if (d.faqAr !== undefined) update.faqAr = d.faqAr;
 
   if (d.title !== undefined || d.titleEn !== undefined || d.titleAr !== undefined) {
     const existing = await prisma.service.findUnique({ where: { id } });
