@@ -1,5 +1,6 @@
 import { PageHeroPlacement, PrismaClient, MediaType } from "@prisma/client";
 import bcrypt from "bcryptjs";
+import { cmsBaselineExists, shouldPreserveCms } from "../lib/cms-baseline";
 import { journalPostSeeds, serviceExtendedContent, supplementalPageBits } from "./seed-content";
 
 const prisma = new PrismaClient();
@@ -63,6 +64,14 @@ async function seedContentOnly() {
 }
 
 async function main() {
+  if (seedDemo && cmsBaselineExists()) {
+    console.error(
+      "FATAL: OMANPHOTO_SEED_DEMO=1 is blocked while prisma/cms-baseline.json exists (production CMS snapshot).",
+    );
+    console.error("Remove the baseline file only on a fresh dev machine, or unset OMANPHOTO_SEED_DEMO.");
+    process.exit(1);
+  }
+
   const adminPassword = process.env.ADMIN_PASSWORD;
   if (!adminPassword || adminPassword.length < 1) {
     console.error("FATAL: ADMIN_PASSWORD is missing.");
@@ -82,6 +91,14 @@ async function main() {
       name: "Studio Admin",
     },
   });
+
+  if (shouldPreserveCms() && !seedDemo) {
+    console.log(
+      "CMS preserved (OMANPHOTO_PRESERVE_CMS=1 or prisma/cms-baseline.json). Skipping hero, media, categories, and page copy.",
+    );
+    console.log("To refresh the saved snapshot after admin edits: npm run cms:snapshot");
+    return;
+  }
 
   const siteDefaults = {
       brandName: "Oman Photo",

@@ -59,5 +59,5 @@ USER node
 WORKDIR /opt/omanphoto/app
 EXPOSE 3000
 # DATABASE_URL comes from docker-compose (host `db` in the stack). check-env + prisma-safe fail fast if missing or DB down.
-# On first boot (empty DB), run seed so admin login works. seed-if-empty exits 1 if users already exist.
-CMD ["bash", "-c", "/opt/omanphoto/scripts/prisma-safe.sh migrate deploy --schema=../server/prisma/schema.prisma && (npx tsx scripts/patch-legacy-nav-labels.ts || true) && (npx tsx scripts/seed-if-empty.ts && (npx prisma db seed || npx tsx scripts/reset-admin-password.ts) || true) && exec npm run start"]
+# Empty DB: restore prisma/cms-baseline.json (never demo seed). Existing DB: no CMS changes on boot.
+CMD ["bash", "-c", "/opt/omanphoto/scripts/prisma-safe.sh migrate deploy --schema=../server/prisma/schema.prisma && (npx tsx scripts/patch-legacy-nav-labels.ts || true) && (npx tsx scripts/seed-if-empty.ts && OMANPHOTO_PRESERVE_CMS=1 OMANPHOTO_SEED_DEMO=0 npx tsx scripts/bootstrap-empty-db.ts || true) && exec npm run start"]

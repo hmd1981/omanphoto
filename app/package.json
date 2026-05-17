@@ -13,7 +13,9 @@
     "db:push": "bash ../scripts/prisma-safe.sh db push --schema=../server/prisma/schema.prisma",
     "db:seed": "bash ../scripts/prisma-safe.sh db seed",
     "db:studio": "bash ../scripts/prisma-safe.sh studio --schema=../server/prisma/schema.prisma",
-    "admin:reset-password": "tsx scripts/reset-admin-password.ts"
+    "admin:reset-password": "tsx scripts/reset-admin-password.ts",
+    "cms:snapshot": "tsx scripts/snapshot-cms-baseline.ts",
+    "cms:restore": "tsx scripts/restore-cms-baseline.ts"
   },
   "prisma": {
     "schema": "../server/prisma/schema.prisma",

@@ -108,6 +108,28 @@ echo "${prev}" > /root/omanphoto/.active-slot
 bash /root/omanphoto/scripts/verify-prod-build.sh
 ```
 
+## CMS baseline (photos, hero, copy, nav labels)
+
+Production structure is frozen in **`app/prisma/cms-baseline.json`**. Deploys and
+`db:seed` **do not** change hero, galleries, categories, or page text while this
+file exists (`OMANPHOTO_PRESERVE_CMS=1` by default in Docker).
+
+After intentional admin edits you want to keep:
+
+```bash
+cd /root/omanphoto && npm run cms:snapshot   # from repo root
+# or: cd app && npm run cms:snapshot
+git add app/prisma/cms-baseline.json && git commit -m "Update CMS baseline"
+```
+
+To undo accidental DB changes:
+
+```bash
+cd /root/omanphoto && npm run cms:restore
+```
+
+Never run `OMANPHOTO_RUN_DB_SEED=1` on production while `cms-baseline.json` is present.
+
 ## Admin password
 
 Production admin password is set from the `ADMIN_PASSWORD` env var when the

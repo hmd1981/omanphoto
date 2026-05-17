@@ -18,7 +18,7 @@
 # Any non-OK step aborts. The script never declares success unless the public site is on the new build.
 #
 # Env:
-#   OMANPHOTO_RUN_DB_SEED=1   — run `npm run db:seed` from app/
+#   OMANPHOTO_RUN_DB_SEED=1   — NOT recommended on production (CMS is frozen in prisma/cms-baseline.json)
 #   PUBLIC_VERIFY_URL=...     — public URL to assert (default https://omanphoto.com)
 #   SKIP_PUBLIC_CUTOVER=1     — skip steps 10-11 (local-only rebuild; you must NOT use this for production)
 set -euo pipefail
@@ -99,7 +99,10 @@ omanphoto_load_database_url_from_dotenv "${ROOT}" || true
 bash "${ROOT}/scripts/prisma-safe.sh" migrate deploy --schema=../server/prisma/schema.prisma
 
 if [[ "${OMANPHOTO_RUN_DB_SEED:-0}" == "1" ]]; then
-  log "Step 6: db:seed content-only (OMANPHOTO_RUN_DB_SEED=1; never overwrites photos/hero)"
+  if [[ -f "${ROOT}/app/prisma/cms-baseline.json" ]]; then
+    fail "OMANPHOTO_RUN_DB_SEED=1 is disabled while app/prisma/cms-baseline.json exists. Deploy without seed, or run: cd app && npm run cms:restore"
+  fi
+  log "Step 6: db:seed (no cms-baseline.json on disk — dev-only)"
   omanphoto_load_database_url_from_dotenv "${ROOT}" || true
   if [[ -z "${ADMIN_PASSWORD:-}" && -f "${ROOT}/.env" ]]; then
     set -a
@@ -109,10 +112,10 @@ if [[ "${OMANPHOTO_RUN_DB_SEED:-0}" == "1" ]]; then
   fi
   [[ -n "${ADMIN_PASSWORD:-}" ]] || fail "ADMIN_PASSWORD must be set for seed (e.g. export ADMIN_PASSWORD=admin)"
   cd "${ROOT}/app"
-  OMANPHOTO_SEED_DEMO=0 npm run db:seed
+  OMANPHOTO_SEED_DEMO=0 OMANPHOTO_PRESERVE_CMS=1 npm run db:seed
   cd "${ROOT}"
 else
-  log "Step 6: skip db:seed (set OMANPHOTO_RUN_DB_SEED=1 to run)"
+  log "Step 6: skip db:seed (production CMS preserved in prisma/cms-baseline.json)"
 fi
 
 cd "${DOCKER_DIR}"

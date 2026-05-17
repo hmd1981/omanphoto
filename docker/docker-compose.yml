@@ -11,6 +11,9 @@ x-web-common: &web_common
     JWT_SECRET: ${JWT_SECRET:-please-set-jwt-secret-in-production-min-32-chars}
     # Default studio login password (override in production). Locked out: `cd app && npm run admin:reset-password`.
     ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin}
+    # Never overwrite production CMS on container start or db:seed (see prisma/cms-baseline.json).
+    OMANPHOTO_PRESERVE_CMS: ${OMANPHOTO_PRESERVE_CMS:-1}
+    OMANPHOTO_SEED_DEMO: ${OMANPHOTO_SEED_DEMO:-0}
     NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-https://omanphoto.com}
     NEXT_PUBLIC_WHATSAPP_E164: ${NEXT_PUBLIC_WHATSAPP_E164:-96890000000}
     NEXT_PUBLIC_INSTAGRAM_HANDLE: ${NEXT_PUBLIC_INSTAGRAM_HANDLE:-omanphoto}

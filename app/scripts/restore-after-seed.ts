@@ -20,9 +20,15 @@ const DEMO_TITLES = new Set([
 ]);
 
 async function main() {
-  const heroMedia = await prisma.media.findFirst({
-    where: { filePath: { contains: "f041c4de-366b-4f16-8229-4357234807dc" } },
-  });
+  // Prefer the full-size homepage hero (April 2026), not the low-res April 14 duplicate.
+  const heroMedia =
+    (await prisma.media.findFirst({
+      where: { filePath: "7da55576-5fd9-4a35-8314-dd7ddbe9e912.jpg" },
+    })) ??
+    (await prisma.media.findFirst({
+      where: { titleEn: { startsWith: "Home hero · Image" } },
+      orderBy: { createdAt: "desc" },
+    }));
 
   await prisma.heroSettings.update({
     where: { id: "singleton" },
@@ -37,9 +43,9 @@ async function main() {
         "Photography and film for clients who expect precision, discretion, and work that endures.",
       overlaySubtitleAr:
         "تصوير وفيلم لمن يبحثون عن الدقة والخصوصية، وعن عمل يدوم بعد انتهاء اليوم.",
-      ctaLabelEn: "Explore AI Studio",
-      ctaLabelAr: "استكشف استوديو AI",
-      ctaHref: "/ai-studio",
+      ctaLabelEn: "View the galleries",
+      ctaLabelAr: "استعرض المعارض",
+      ctaHref: "/portfolio",
     },
   });
 
