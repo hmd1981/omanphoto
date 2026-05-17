@@ -18,7 +18,6 @@ export function SiteHeader({ settings, locale }: Props) {
     { href: localizedPath(locale, "/portfolio"), label: pickTextWithOptionalFallback(locale, s?.navPortfolioEn, s?.navPortfolioAr) },
     { href: localizedPath(locale, "/services"), label: pickTextWithOptionalFallback(locale, s?.navServicesEn, s?.navServicesAr) },
     { href: localizedPath(locale, "/about"), label: pickTextWithOptionalFallback(locale, s?.navAboutEn, s?.navAboutAr) },
-    { href: localizedPath(locale, "/journal"), label: u.navJournal },
     { href: localizedPath(locale, "/ai-studio"), label: u.navAiStudio },
     { href: localizedPath(locale, "/book"), label: u.navBook },
     { href: localizedPath(locale, "/contact"), label: pickTextWithOptionalFallback(locale, s?.navContactEn, s?.navContactAr) },

@@ -9,64 +9,6 @@ export const supplementalPageBits: {
   bodyAr?: string;
   sortOrder: number;
 }[] = [
-  // —— About (expanded) ——
-  {
-    pageKey: "about",
-    sectionKey: "story",
-    titleEn: "The practice",
-    titleAr: "الممارسة",
-    bodyEn:
-      "Oman Photo is a Muscat-based studio for editorial stills and cinematic motion. We work with couples, brands, institutions, and private clients who value restraint, craft, and images that hold up years after the event—not only on a feed. Our work is deliberately monochrome: it removes distraction and keeps attention on gesture, light, and structure.",
-    bodyAr:
-      "عُمان فوتو استوديو في مسقط للصور التحريرية والحركة السينمائية. نعمل مع الأزواج والعلامات والمؤسسات وعملاء خاصين يقدّرون الرصانة والإتقان وصوراً تبقى بعد سنوات — لا للتمرير السريع فقط. نعتمد الأبيض والأسود عمداً: يزيل الضجيج ويبقي العين على الإيماءة والضوء والتكوين.",
-    sortOrder: 10,
-  },
-  {
-    pageKey: "about",
-    sectionKey: "detail_1",
-    bodyEn:
-      "We operate as a focused atelier: one lead creative direction, supported by a trusted network of assistants, retouchers, and motion editors when scale requires it. Every commission follows the same standard—briefing, location or studio planning, capture, edit, colour, and delivery—so your wedding gallery and your industrial report share the same visual discipline.",
-    bodyAr:
-      "نعمل كمشغل مركّز: رؤية إبداعية واحدة، مع شبكة موثوقة من المساعدين والمُعالجين ومحرري الفيديو عند اتساع المشروع. كل عمولة تمر بنفس المسار: الموجز، التخطيط في الموقع أو الاستوديو، التصوير، المونتاج، الألوان، والتسليم — حتى يكون ألبوم الزفاف وتقريرك الصناعي بنفس الانضباط البصري.",
-    sortOrder: 20,
-  },
-  {
-    pageKey: "about",
-    sectionKey: "detail_2",
-    bodyEn:
-      "Commissions are accepted by appointment. We prefer clear briefs, realistic timelines, and clients who care about the final frame as much as the moment it was taken. Rush jobs without prep rarely produce work we are proud to publish; we will say so honestly during enquiry.",
-    bodyAr:
-      "نستقبل المشاريع بموعد مسبق. نفضّل موجزاً واضحاً وجدولاً واقعياً وعملاء يهتمون بالصورة النهائية كما يهتمون باللحظة. المشاريع المتسرعة بلا تحضير نادراً ما تنتج عملاً نفخر بنشره؛ سنقول ذلك بصراحة عند الاستفسار.",
-    sortOrder: 30,
-  },
-  {
-    pageKey: "about",
-    sectionKey: "detail_3",
-    bodyEn:
-      "Based in Muscat, we travel across the Sultanate of Oman and the Gulf for multi-day productions. On location we travel light but prepared: calibrated monitors on set when grading matters, backup media workflows, and contracts that respect your privacy and image rights.",
-    bodyAr:
-      "مقرّنا مسقط، ونسافر في سلطنة عُمان والخليج للإنتاجات متعددة الأيام. في الموقع نتحرك بخفة وباستعداد: شاشات معايرة عند الحاجة، نسخ احتياطية للملفات، وعقود تحترم خصوصيتكم وحقوق الصورة.",
-    sortOrder: 35,
-  },
-  {
-    pageKey: "about",
-    sectionKey: "detail_4",
-    bodyEn:
-      "Deliverables typically include colour-graded stills, a private online gallery for review, and print-ready exports at agreed dimensions. Motion projects are delivered in formats defined in the brief—from ProRes masters for post houses to H.264 or H.265 files sized for web, social, and presentation.",
-    bodyAr:
-      "التسليم المعتاد: صور معالجة ألواناً، معرضاً خاصاً للمعاينة، وملفات جاهزة للطباعة بالمقاسات المتفق عليها. مشاريع الفيديو تُسلَّم بالصيغ المحددة في الموجز — من ProRes للمونتاج إلى H.264 أو H.265 للويب والمنصات.",
-    sortOrder: 40,
-  },
-  {
-    pageKey: "about",
-    sectionKey: "detail_5",
-    bodyEn:
-      "If you are comparing studios, look at full galleries—not only hero frames. Our site shows representative work by discipline so you can judge consistency. When you are ready, use the enquiry form with your date, location, and what success looks like for you.",
-    bodyAr:
-      "إن كنت تقارن الاستوديوهات، انظر المعارض كاملة — لا الإطار الواحد فقط. يعرض موقعنا أعمالاً ممثلة حسب التخصص لتقييم الاتساق. عندما تكون جاهزاً، استخدم نموذج الاستفسار مع التاريخ والموقع وما يعني النجاح لمشروعك.",
-    sortOrder: 45,
-  },
-
   // —— Journal index ——
   {
     pageKey: "journal",

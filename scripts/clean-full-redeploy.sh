@@ -99,7 +99,7 @@ omanphoto_load_database_url_from_dotenv "${ROOT}" || true
 bash "${ROOT}/scripts/prisma-safe.sh" migrate deploy --schema=../server/prisma/schema.prisma
 
 if [[ "${OMANPHOTO_RUN_DB_SEED:-0}" == "1" ]]; then
-  log "Step 6: db:seed (OMANPHOTO_RUN_DB_SEED=1)"
+  log "Step 6: db:seed content-only (OMANPHOTO_RUN_DB_SEED=1; never overwrites photos/hero)"
   omanphoto_load_database_url_from_dotenv "${ROOT}" || true
   if [[ -z "${ADMIN_PASSWORD:-}" && -f "${ROOT}/.env" ]]; then
     set -a
@@ -109,7 +109,7 @@ if [[ "${OMANPHOTO_RUN_DB_SEED:-0}" == "1" ]]; then
   fi
   [[ -n "${ADMIN_PASSWORD:-}" ]] || fail "ADMIN_PASSWORD must be set for seed (e.g. export ADMIN_PASSWORD=admin)"
   cd "${ROOT}/app"
-  npm run db:seed
+  OMANPHOTO_SEED_DEMO=0 npm run db:seed
   cd "${ROOT}"
 else
   log "Step 6: skip db:seed (set OMANPHOTO_RUN_DB_SEED=1 to run)"

@@ -13,6 +13,55 @@ const MAP_PAGE_URL =
 const gray = (seed: string, w = 1600, h = 1000) =>
   `https://picsum.photos/seed/${seed}/${w}/${h}?grayscale`;
 
+/** Full demo seed (picsum placeholders, hero overwrite) — never on production deploy. */
+const seedDemo = process.env.OMANPHOTO_SEED_DEMO === "1";
+
+/** AdSense/legal/journal copy only — safe to run on production. */
+async function seedContentOnly() {
+  for (const p of supplementalPageBits) {
+    await prisma.pageContent.upsert({
+      where: { pageKey_sectionKey: { pageKey: p.pageKey, sectionKey: p.sectionKey } },
+      update: {
+        titleEn: p.titleEn,
+        titleAr: p.titleAr,
+        bodyEn: p.bodyEn,
+        bodyAr: p.bodyAr,
+        sortOrder: p.sortOrder,
+        published: true,
+      },
+      create: { ...p, published: true },
+    });
+  }
+
+  for (const j of journalPostSeeds) {
+    await prisma.journalPost.upsert({
+      where: { slug: j.slug },
+      update: {
+        titleEn: j.titleEn,
+        titleAr: j.titleAr,
+        excerptEn: j.excerptEn,
+        excerptAr: j.excerptAr,
+        bodyEn: j.bodyEn,
+        bodyAr: j.bodyAr,
+        sortOrder: j.sortOrder,
+        published: true,
+      },
+      create: { ...j, published: true },
+    });
+  }
+
+  for (const [slug, extra] of Object.entries(serviceExtendedContent)) {
+    const existing = await prisma.service.findUnique({ where: { slug } });
+    if (!existing) continue;
+    await prisma.service.update({
+      where: { slug },
+      data: extra,
+    });
+  }
+
+  console.log("Content-only seed complete (privacy, terms, journal, service FAQs — CMS untouched).");
+}
+
 async function main() {
   const adminPassword = process.env.ADMIN_PASSWORD;
   if (!adminPassword || adminPassword.length < 1) {
@@ -34,82 +83,59 @@ async function main() {
     },
   });
 
+  const siteDefaults = {
+      brandName: "Oman Photo",
+      footerTaglineEn:
+        "Luxury photography and cinematic production. Muscat · By appointment.",
+      footerTaglineAr: "تصوير فاخر وإنتاج سينمائي. مسقط · بموعد مسبق.",
+      footerEmail: "info@omanphoto.com",
+      footerPhone: "+96893376940",
+      instagramUrl: "https://www.instagram.com/masterpiece_proshots/",
+      whatsappUrl: "https://wa.me/message/NBV22R27A46TB1",
+      mapEmbedUrl: MAP_EMBED_URL,
+      mapPageUrl: MAP_PAGE_URL,
+      footerLocationLine: "Muscat, Sultanate of Oman",
+      footerBookLabelEn: "Begin a commission",
+      footerBookLabelAr: "ابدأ مشروعك",
+      copyrightName: "Oman Photo",
+      heroEyebrowEn: "Muscat · Sultanate of Oman",
+      heroEyebrowAr: "مسقط · سلطنة عُمان",
+      navHomeEn: "Home",
+      navHomeAr: "الرئيسية",
+      navPortfolioEn: "Galleries",
+      navPortfolioAr: "المعارض",
+      navServicesEn: "Services",
+      navServicesAr: "الخدمات",
+      navAboutEn: "Studio",
+      navAboutAr: "الاستوديو",
+      navContactEn: "Enquire",
+      navContactAr: "استفسار",
+      navMenuLabelEn: "Menu",
+      navMenuLabelAr: "القائمة",
+      defaultMetaTitleEn: "Oman Photo — Photography & cinematic production",
+      defaultMetaTitleAr: "عُمان فوتو — تصوير وإنتاج سينمائي",
+      defaultMetaDescriptionEn:
+        "A Muscat studio for editorial photography and film—weddings, events, industry, and brands. Black & white. Appointment only.",
+      defaultMetaDescriptionAr:
+        "استوديو في مسقط للتصوير التحريري والفيلم: أفراح، فعاليات، قطاعات، وعلامات. أبيض وأسود. بموعد مسبق.",
+  };
+
   await prisma.siteSettings.upsert({
     where: { id: "singleton" },
-    update: {
-      brandName: "Oman Photo",
-      footerTaglineEn:
-        "Luxury photography and cinematic production. Muscat · By appointment.",
-      footerTaglineAr: "تصوير فاخر وإنتاج سينمائي. مسقط · بموعد مسبق.",
-      footerEmail: "info@omanphoto.com",
-      footerPhone: "+96893376940",
-      instagramUrl: "https://www.instagram.com/masterpiece_proshots/",
-      whatsappUrl: "https://wa.me/message/NBV22R27A46TB1",
-      mapEmbedUrl: MAP_EMBED_URL,
-      mapPageUrl: MAP_PAGE_URL,
-      footerLocationLine: "Muscat, Sultanate of Oman",
-      footerBookLabelEn: "Begin a commission",
-      footerBookLabelAr: "ابدأ مشروعك",
-      copyrightName: "Oman Photo",
-      heroEyebrowEn: "Muscat · Sultanate of Oman",
-      heroEyebrowAr: "مسقط · سلطنة عُمان",
-      navHomeEn: "Home",
-      navHomeAr: "الرئيسية",
-      navPortfolioEn: "Galleries",
-      navPortfolioAr: "المعارض",
-      navServicesEn: "Services",
-      navServicesAr: "الخدمات",
-      navAboutEn: "Studio",
-      navAboutAr: "الاستوديو",
-      navContactEn: "Enquire",
-      navContactAr: "استفسار",
-      navMenuLabelEn: "Menu",
-      navMenuLabelAr: "القائمة",
-      defaultMetaTitleEn: "Oman Photo — Photography & cinematic production",
-      defaultMetaTitleAr: "عُمان فوتو — تصوير وإنتاج سينمائي",
-      defaultMetaDescriptionEn:
-        "A Muscat studio for editorial photography and film—weddings, events, industry, and brands. Black & white. Appointment only.",
-      defaultMetaDescriptionAr:
-        "استوديو في مسقط للتصوير التحريري والفيلم: أفراح، فعاليات، قطاعات، وعلامات. أبيض وأسود. بموعد مسبق.",
-    },
-    create: {
-      id: "singleton",
-      brandName: "Oman Photo",
-      footerTaglineEn:
-        "Luxury photography and cinematic production. Muscat · By appointment.",
-      footerTaglineAr: "تصوير فاخر وإنتاج سينمائي. مسقط · بموعد مسبق.",
-      footerEmail: "info@omanphoto.com",
-      footerPhone: "+96893376940",
-      instagramUrl: "https://www.instagram.com/masterpiece_proshots/",
-      whatsappUrl: "https://wa.me/message/NBV22R27A46TB1",
-      mapEmbedUrl: MAP_EMBED_URL,
-      mapPageUrl: MAP_PAGE_URL,
-      footerLocationLine: "Muscat, Sultanate of Oman",
-      footerBookLabelEn: "Begin a commission",
-      footerBookLabelAr: "ابدأ مشروعك",
-      copyrightName: "Oman Photo",
-      heroEyebrowEn: "Muscat · Sultanate of Oman",
-      heroEyebrowAr: "مسقط · سلطنة عُمان",
-      navHomeEn: "Home",
-      navHomeAr: "الرئيسية",
-      navPortfolioEn: "Galleries",
-      navPortfolioAr: "المعارض",
-      navServicesEn: "Services",
-      navServicesAr: "الخدمات",
-      navAboutEn: "Studio",
-      navAboutAr: "الاستوديو",
-      navContactEn: "Enquire",
-      navContactAr: "استفسار",
-      navMenuLabelEn: "Menu",
-      navMenuLabelAr: "القائمة",
-      defaultMetaTitleEn: "Oman Photo — Photography & cinematic production",
-      defaultMetaTitleAr: "عُمان فوتو — تصوير وإنتاج سينمائي",
-      defaultMetaDescriptionEn:
-        "A Muscat studio for editorial photography and film—weddings, events, industry, and brands. Black & white. Appointment only.",
-      defaultMetaDescriptionAr:
-        "استوديو في مسقط للتصوير التحريري والفيلم: أفراح، فعاليات، قطاعات، وعلامات. أبيض وأسود. بموعد مسبق.",
-    },
+    update: seedDemo ? siteDefaults : {},
+    create: { id: "singleton", ...siteDefaults },
   });
+
+  if (!seedDemo) {
+    console.log(
+      "Content-only seed: skipping demo media/hero/categories (set OMANPHOTO_SEED_DEMO=1 for full demo seed).",
+    );
+  }
+
+  if (!seedDemo) {
+    await seedContentOnly();
+    return;
+  }
 
   const categories: {
     nameEn: string;
@@ -283,7 +309,7 @@ async function main() {
     const row = existing
       ? await prisma.media.update({
           where: { id: existing.id },
-          data: { ...m, active: true },
+          data: { active: true },
         })
       : await prisma.media.create({
           data: { ...m, active: true },
