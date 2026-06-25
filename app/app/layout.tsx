@@ -1,26 +1,47 @@
 import type { Metadata } from "next";
-import Script from "next/script";
-import { Cormorant_Garamond, DM_Sans, Noto_Sans_Arabic } from "next/font/google";
+import { Amiri, Cormorant_Garamond, IBM_Plex_Sans_Arabic, Libre_Franklin, Noto_Naskh_Arabic, Tajawal } from "next/font/google";
 import "./globals.css";
 
 const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
+  weight: ["300", "400", "500"],
+  style: ["normal", "italic"],
   variable: "--font-cormorant",
   display: "swap",
 });
 
-const dmSans = DM_Sans({
+const libreFranklin = Libre_Franklin({
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  variable: "--font-dm-sans",
+  weight: ["300", "400", "500"],
+  variable: "--font-sans-en",
   display: "swap",
 });
 
-const notoArabic = Noto_Sans_Arabic({
+const amiri = Amiri({
   subsets: ["arabic"],
-  weight: ["400", "500", "600"],
-  variable: "--font-noto-arabic",
+  weight: ["400", "700"],
+  variable: "--font-display-ar",
+  display: "swap",
+});
+
+const ibmPlexSansArabic = IBM_Plex_Sans_Arabic({
+  subsets: ["arabic"],
+  weight: ["300", "400", "500"],
+  variable: "--font-hero-ui-ar",
+  display: "swap",
+});
+
+const notoNaskhArabic = Noto_Naskh_Arabic({
+  subsets: ["arabic"],
+  weight: ["400", "500"],
+  variable: "--font-hero-ar",
+  display: "swap",
+});
+
+const tajawal = Tajawal({
+  subsets: ["arabic"],
+  weight: ["300", "400", "500"],
+  variable: "--font-sans-ar",
   display: "swap",
 });
 
@@ -54,26 +75,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${cormorant.variable} ${dmSans.variable} ${notoArabic.variable}`}>
+    <html
+      lang="en"
+      className={`${cormorant.variable} ${libreFranklin.variable} ${amiri.variable} ${ibmPlexSansArabic.variable} ${notoNaskhArabic.variable} ${tajawal.variable}`}
+    >
       <body className="min-h-screen bg-paper antialiased text-ink">
-        <Script
-          src="https://www.googletagmanager.com/gtag/js?id=AW-712088539"
-          strategy="beforeInteractive"
-        />
-        <Script id="google-ads-gtag" strategy="beforeInteractive">
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'AW-712088539');
-          `}
-        </Script>
-        <Script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3160854101704307"
-          strategy="beforeInteractive"
-          crossOrigin="anonymous"
-        />
         {children}
       </body>
     </html>

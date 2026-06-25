@@ -6,6 +6,7 @@ function isPublicAsset(pathname: string) {
   return (
     pathname.startsWith("/_next") ||
     pathname === "/favicon.ico" ||
+    pathname === "/ads.txt" ||
     /\.(?:svg|png|jpg|jpeg|gif|webp|ico|woff2?|mp4|webm)$/i.test(pathname)
   );
 }
@@ -68,12 +69,11 @@ export async function middleware(request: NextRequest) {
   }
 
   if (pathname === "/") {
-    // Preserve query string (e.g. ?utm_source=ads) so marketing attribution survives the redirect.
-    // The URL fragment (#hash) is never sent to the server, but per RFC 7231 the browser
-    // re-applies the original fragment to the redirect target automatically.
+    // Rewrite (not redirect) so the page actually renders at "/" and the Google Ads
+    // gtag fires. A 307 redirect would skip rendering entirely, leaving "/" untagged.
     const url = request.nextUrl.clone();
     url.pathname = "/en";
-    return NextResponse.redirect(url);
+    return NextResponse.rewrite(url);
   }
 
   const hasLocale = pathname === "/en" || pathname === "/ar" || pathname.startsWith("/en/") || pathname.startsWith("/ar/");

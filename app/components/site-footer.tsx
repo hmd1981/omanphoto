@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { SiteSettings } from "@prisma/client";
 import type { Locale } from "@/lib/locale";
 import { resolveContactLinks } from "@/lib/contact-links";
-import { localizedPath, pickText, pickTextWithOptionalFallback } from "@/lib/locale";
+import { localizedPath, pickText, pickTextWithOptionalFallback, siteBrandDisplay } from "@/lib/locale";
 import { ui } from "@/lib/ui-strings";
 
 type Props = {
@@ -14,7 +14,7 @@ export function SiteFooter({ settings, locale }: Props) {
   const s = settings;
   const u = ui(locale);
   const links = resolveContactLinks(s);
-  const brand = s?.brandName ?? "Oman Photo";
+  const brand = siteBrandDisplay(locale, s);
   const tagline = pickText(locale, s?.footerTaglineEn, s?.footerTaglineAr);
   const email = links.email;
   const location = s?.footerLocationLine ?? "";
@@ -26,10 +26,10 @@ export function SiteFooter({ settings, locale }: Props) {
     <footer className="border-t border-line/60">
       <div className="mx-auto flex max-w-7xl flex-col gap-14 px-6 py-16 md:flex-row md:items-end md:justify-between md:gap-12 md:px-10 md:py-24">
         <div className="max-w-md">
-          <p className="font-display text-[1.5rem] tracking-[0.2em] md:text-[1.75rem]">{brand}</p>
-          {tagline ? <p className="mt-6 text-sm leading-[1.8] text-muted">{tagline}</p> : null}
+          <p className="font-display text-[1.45rem] tracking-[0.14em] md:text-[1.65rem] md:tracking-[0.16em]">{brand}</p>
+          {tagline ? <p className="mt-6 text-sm font-light leading-[1.85] text-muted">{tagline}</p> : null}
         </div>
-        <div className="flex flex-col gap-6 text-[11px] uppercase tracking-[0.3em] text-muted md:items-end">
+        <div className="nav-editorial flex flex-col gap-6 text-muted md:items-end">
           <p className="flex flex-wrap gap-x-6 gap-y-2 md:justify-end">
             <Link
               href={localizedPath(locale, "/journal")}

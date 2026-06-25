@@ -11,6 +11,29 @@ import { pickPageContent, pickTextWithOptionalFallback, serviceTitle } from "@/l
 import type { Locale } from "@/lib/locale";
 import { isLocale } from "@/lib/locale";
 
+const contactTrustCopy = {
+  en: {
+    heading: "How requests are handled",
+    intro:
+      "Oman Photo uses the contact form to collect only the information needed to understand the assignment and respond with a practical next step. Messages are reviewed by the studio team, not published, sold, or added to a public directory.",
+    points: [
+      "For event and wedding requests, include the date, venue, expected coverage hours, and any privacy restrictions for guests or family members.",
+      "For commercial and industrial projects, include the location, number of deliverables, intended use, brand guidelines, and any access or safety requirements.",
+      "If a request is not a fit, we still try to respond clearly so the client knows whether to adjust the brief, timeline, or production scope.",
+    ],
+  },
+  ar: {
+    heading: "كيف تتم معالجة الطلبات",
+    intro:
+      "تستخدم عمان فوتو نموذج التواصل لجمع المعلومات الضرورية فقط لفهم المهمة والرد بخطوة عملية. تتم مراجعة الرسائل من فريق الاستوديو، ولا يتم نشرها أو بيعها أو إضافتها إلى أي دليل عام.",
+    points: [
+      "لطلبات الأعراس والفعاليات، من المفيد ذكر التاريخ والمكان وساعات التغطية المتوقعة وأي قيود خصوصية تخص الضيوف أو العائلة.",
+      "للمشاريع التجارية والصناعية، يرجى توضيح الموقع وعدد المخرجات والاستخدام المقصود وإرشادات العلامة وأي متطلبات وصول أو سلامة.",
+      "إذا لم يكن الطلب مناسبا، نحاول الرد بوضوح حتى يعرف العميل ما إذا كان يحتاج إلى تعديل الفكرة أو الجدول الزمني أو نطاق الإنتاج.",
+    ],
+  },
+} as const;
+
 export async function generateMetadata({
   params,
 }: {
@@ -85,6 +108,24 @@ export default async function ContactPage({
           ) : null}
         </header>
       </PageHeroIntro>
+
+      <section className="editorial-section border-t border-line/50 py-12 md:py-16">
+        <div className="max-w-4xl">
+          <p className="text-[10px] uppercase tracking-[0.34em] text-muted">
+            {contactTrustCopy[locale].heading}
+          </p>
+          <p className="mt-7 max-w-3xl text-sm font-light leading-[1.9] text-ink-muted md:text-[0.9375rem]">
+            {contactTrustCopy[locale].intro}
+          </p>
+          <ul className="mt-8 grid gap-5 text-sm font-light leading-[1.85] text-ink-muted md:grid-cols-3">
+            {contactTrustCopy[locale].points.map((point) => (
+              <li key={point} className="border-t border-line/40 pt-5">
+                {point}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
 
       <div className="editorial-section grid gap-16 border-t border-line/50 pb-20 pt-12 md:grid-cols-12 md:gap-16 md:pb-36 md:pt-20 lg:gap-20">
         <div className="flex flex-col md:col-span-5">

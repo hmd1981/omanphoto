@@ -10,6 +10,62 @@ import { isLocale } from "@/lib/locale";
 import { isExternalUrl, resolveMediaSrc } from "@/lib/media-url";
 import { ui } from "@/lib/ui-strings";
 
+const fallbackServiceContent = {
+  en: {
+    heading: "Production approach",
+    paragraphs: [
+      "Oman Photo plans each service around the final use of the images, not only the shooting day. Before production, the team reviews the brief, location, required permissions, timing, visual references, and the level of privacy expected by the client. This helps the final gallery feel intentional whether the work is for a family archive, an editorial feature, a business profile, or a campaign.",
+      "During the assignment, the priority is controlled lighting, careful composition, and consistent coverage of the important moments or deliverables. The editing stage focuses on clean color, strong black-and-white options when appropriate, and a coherent sequence that can be used across web, print, press, and social channels.",
+    ],
+    deliverablesHeading: "What clients receive",
+    deliverables: [
+      "A confirmed production scope before the shoot, including timing, location notes, and expected deliverables.",
+      "A curated edited gallery prepared for the agreed usage, with file formats matched to the client brief.",
+      "Clear communication about privacy, publication, and commercial usage rights before images are shared.",
+    ],
+  },
+  ar: {
+    heading: "أسلوب الإنتاج",
+    paragraphs: [
+      "تخطط عمان فوتو لكل خدمة بناء على الاستخدام النهائي للصور، وليس يوم التصوير فقط. قبل الإنتاج، يراجع الفريق طبيعة الطلب والموقع والتصاريح المطلوبة والتوقيت والمراجع البصرية ومستوى الخصوصية المتوقع من العميل. يساعد ذلك في تقديم معرض نهائي واضح الهدف، سواء كان العمل لأرشيف عائلي أو مادة تحريرية أو ملف تعريفي تجاري أو حملة.",
+      "أثناء المهمة، تكون الأولوية للإضاءة المضبوطة والتكوين الدقيق والتغطية المتسقة للحظات أو المخرجات المهمة. وتركز مرحلة التحرير على لون نظيف، وخيارات أبيض وأسود قوية عند الحاجة، وتسلسل بصري يمكن استخدامه في الويب والطباعة والصحافة وقنوات التواصل.",
+    ],
+    deliverablesHeading: "ما الذي يحصل عليه العميل",
+    deliverables: [
+      "نطاق إنتاج مؤكد قبل التصوير، يتضمن التوقيت وملاحظات الموقع والمخرجات المتوقعة.",
+      "معرض صور محرر ومنسق حسب الاستخدام المتفق عليه، مع صيغ ملفات مناسبة لطبيعة الطلب.",
+      "تواصل واضح حول الخصوصية والنشر وحقوق الاستخدام التجاري قبل مشاركة الصور.",
+    ],
+  },
+} as const;
+
+const serviceAssuranceContent = {
+  en: {
+    heading: "Planning, privacy, and image use",
+    paragraphs: [
+      "Before a project is accepted, the studio checks whether the assignment needs private handling, public release approval, location permissions, or a different delivery format for press, web, archive, or advertising use. These details affect how the shoot is planned and how the final files are prepared.",
+      "Clients can share references, preferred crops, brand rules, or examples of previous images that should be matched or avoided. The goal is to make the final gallery useful beyond a single post: images should support booking pages, profiles, printed material, media kits, and long-term documentation.",
+    ],
+    points: [
+      "Clear expectations for schedule, access, shot priorities, and review timing.",
+      "Editing decisions that preserve a consistent visual identity across the full set.",
+      "Delivery guidance for web, social, print, press, and internal archive use.",
+    ],
+  },
+  ar: {
+    heading: "التخطيط والخصوصية واستخدام الصور",
+    paragraphs: [
+      "قبل قبول المشروع، يراجع الاستوديو ما إذا كانت المهمة تحتاج إلى تعامل خاص، أو موافقة قبل النشر، أو تصاريح موقع، أو صيغة تسليم مختلفة للاستخدام الصحفي أو الرقمي أو الأرشيفي أو الإعلاني. تؤثر هذه التفاصيل في طريقة التخطيط للتصوير وتجهيز الملفات النهائية.",
+      "يمكن للعملاء مشاركة المراجع البصرية، والقصات المطلوبة، وقواعد العلامة، أو أمثلة لصور سابقة يجب الاقتراب منها أو تجنبها. الهدف أن يكون المعرض النهائي مفيدا لأكثر من منشور واحد: للصفحات التعريفية، والمواد المطبوعة، والملفات الإعلامية، والتوثيق طويل المدى.",
+    ],
+    points: [
+      "توقعات واضحة للجدول والوصول وأولويات اللقطات ووقت المراجعة.",
+      "قرارات تحرير تحافظ على هوية بصرية متسقة في كامل المجموعة.",
+      "إرشاد للتسليم المناسب للويب والتواصل الاجتماعي والطباعة والصحافة والأرشفة الداخلية.",
+    ],
+  },
+} as const;
+
 export async function generateMetadata({
   params,
 }: {
@@ -111,7 +167,36 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
             {extendedBody}
           </div>
         </section>
-      ) : null}
+      ) : (
+        <section className="mt-16 max-w-3xl border-t border-line/60 pt-14 md:mt-20 md:pt-16">
+          <h2 className="text-[10px] uppercase tracking-[0.38em] text-muted">
+            {fallbackServiceContent[locale].heading}
+          </h2>
+          <div className="mt-8 space-y-6 text-sm font-light leading-[1.92] text-ink-muted md:text-[0.9375rem]">
+            {fallbackServiceContent[locale].paragraphs.map((paragraph) => (
+              <p key={paragraph}>{paragraph}</p>
+            ))}
+          </div>
+        </section>
+      )}
+
+      <section className="mt-16 max-w-3xl border-t border-line/60 pt-14 md:mt-20 md:pt-16">
+        <h2 className="text-[10px] uppercase tracking-[0.38em] text-muted">
+          {serviceAssuranceContent[locale].heading}
+        </h2>
+        <div className="mt-8 space-y-6 text-sm font-light leading-[1.92] text-ink-muted md:text-[0.9375rem]">
+          {serviceAssuranceContent[locale].paragraphs.map((paragraph) => (
+            <p key={paragraph}>{paragraph}</p>
+          ))}
+        </div>
+        <ul className="mt-8 grid gap-5 text-sm font-light leading-[1.85] text-ink-muted md:grid-cols-3">
+          {serviceAssuranceContent[locale].points.map((point) => (
+            <li key={point} className="border-t border-line/35 pt-5">
+              {point}
+            </li>
+          ))}
+        </ul>
+      </section>
 
       {faq.length > 0 ? (
         <section className="mt-16 max-w-3xl border-t border-line/60 pt-14 md:mt-20 md:pt-16">
@@ -125,7 +210,20 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
             ))}
           </dl>
         </section>
-      ) : null}
+      ) : (
+        <section className="mt-16 max-w-3xl border-t border-line/60 pt-14 md:mt-20 md:pt-16">
+          <h2 className="text-[10px] uppercase tracking-[0.38em] text-muted">
+            {fallbackServiceContent[locale].deliverablesHeading}
+          </h2>
+          <ul className="mt-8 space-y-5 text-sm font-light leading-[1.9] text-ink-muted">
+            {fallbackServiceContent[locale].deliverables.map((item) => (
+              <li key={item} className="border-t border-line/35 pt-5">
+                {item}
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       {galleryRows.length > 0 ? (
         <section className="mt-20 border-t border-line/60 pt-16 md:mt-28 md:pt-20">

@@ -73,6 +73,12 @@ export function siteBrand(settings: SiteSettings | null): string {
   return settings?.brandName?.trim() || "Oman Photo";
 }
 
+/** Public-facing brand lockup — Arabic site uses a clear Arabic name, not Latin-only. */
+export function siteBrandDisplay(locale: Locale, settings: SiteSettings | null): string {
+  if (locale === "ar") return "عُمان فوتو";
+  return siteBrand(settings);
+}
+
 export function localizedPath(locale: Locale, path: string): string {
   if (!path.startsWith("/")) return path;
   if (path.startsWith("/en") || path.startsWith("/ar")) return path;

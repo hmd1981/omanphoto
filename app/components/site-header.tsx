@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { SiteSettings } from "@prisma/client";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import type { Locale } from "@/lib/locale";
-import { localizedPath, pickTextWithOptionalFallback } from "@/lib/locale";
+import { localizedPath, pickTextWithOptionalFallback, siteBrandDisplay } from "@/lib/locale";
 import { ui } from "@/lib/ui-strings";
 
 type Props = {
@@ -22,7 +22,7 @@ export function SiteHeader({ settings, locale }: Props) {
     { href: localizedPath(locale, "/book"), label: u.navBook },
     { href: localizedPath(locale, "/contact"), label: pickTextWithOptionalFallback(locale, s?.navContactEn, s?.navContactAr) },
   ];
-  const brand = s?.brandName ?? "Oman Photo";
+  const brand = siteBrandDisplay(locale, s);
   const menu = pickTextWithOptionalFallback(locale, s?.navMenuLabelEn, s?.navMenuLabelAr);
 
   return (
@@ -60,7 +60,7 @@ export function SiteHeader({ settings, locale }: Props) {
             />
           </svg>
           <span className="relative inline-block min-w-0 pb-[3px]">
-            <span className="brand-lockup-word font-display text-[1.35rem] tracking-[0.2em] text-ink-bright [--brand-track-end:0.2em] md:text-[1.65rem] md:tracking-[0.22em] md:[--brand-track-end:0.22em]">
+            <span className="brand-lockup-word font-display text-[1.3rem] tracking-[0.16em] text-ink-bright [--brand-track-end:0.16em] md:text-[1.55rem] md:tracking-[0.18em] md:[--brand-track-end:0.18em]">
               {brand}
             </span>
             <span
@@ -73,7 +73,7 @@ export function SiteHeader({ settings, locale }: Props) {
           </span>
         </Link>
         <div className="flex items-center gap-6 md:gap-10">
-          <nav className="hidden items-center gap-9 text-[11px] uppercase tracking-[0.3em] text-muted md:flex lg:gap-11">
+          <nav className="nav-editorial hidden items-center gap-9 text-muted md:flex lg:gap-11">
             {links.map((l) => (
               <Link
                 key={l.href}
@@ -103,11 +103,11 @@ function MobileNav({
 }) {
   return (
     <details className={`relative ${className ?? ""}`}>
-      <summary className="cursor-pointer list-none text-[11px] uppercase tracking-[0.3em] text-muted transition-colors hover:text-ink-bright">
+      <summary className="nav-editorial cursor-pointer list-none text-muted transition-colors hover:text-ink-bright">
         {menuLabel}
       </summary>
       <div className="absolute end-0 z-50 mt-4 min-w-[13rem] border border-line/80 bg-paper/95 px-5 py-5 backdrop-blur-md">
-        <ul className="flex flex-col gap-4 text-[11px] uppercase tracking-[0.24em]">
+        <ul className="nav-editorial flex flex-col gap-4">
           {links.map((l) => (
             <li key={l.href}>
               <Link href={l.href} className="text-ink-muted transition-colors hover:text-ink-bright">

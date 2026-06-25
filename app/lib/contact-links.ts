@@ -51,7 +51,7 @@ export function resolveContactLinks(settings: SiteSettings | null): ResolvedCont
   return {
     email,
     phone,
-    telHref: digitsOnlyTel(phone) || digitsOnlyTel(d.footerPhone),
+    telHref: `tel:${digitsOnlyTel(phone) || digitsOnlyTel(d.footerPhone)}`,
     instagramUrl,
     whatsappUrl,
     mapEmbedUrl,

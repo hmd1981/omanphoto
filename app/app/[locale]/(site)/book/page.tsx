@@ -10,6 +10,53 @@ import type { Locale } from "@/lib/locale";
 import { isLocale } from "@/lib/locale";
 import { ui } from "@/lib/ui-strings";
 
+const bookGuidance = {
+  en: {
+    heading: "What happens before a date is confirmed",
+    intro:
+      "Every assignment starts with a short review of the brief, location, intended usage, and delivery timeline. This keeps the booking page useful for clients who are comparing wedding, event, commercial, and editorial photography in Oman before they send a request.",
+    items: [
+      {
+        title: "Scope and usage",
+        body:
+          "We confirm where the images will be used, how many finished photographs are expected, and whether the work is private, editorial, commercial, or campaign-led. Usage rights, privacy needs, and publication timing are clarified before production begins.",
+      },
+      {
+        title: "Production planning",
+        body:
+          "For weddings and events we review schedule, access, family or guest priorities, and lighting conditions. For commercial work we map the shot list, talent, products, site rules, safety requirements, and any brand references that should guide the final edit.",
+      },
+      {
+        title: "Delivery expectations",
+        body:
+          "The final proposal includes the shoot window, estimated editing time, delivery format, and the best contact route for approvals. If the request needs a faster turnaround, that is discussed before confirming the date.",
+      },
+    ],
+  },
+  ar: {
+    heading: "ما الذي يحدث قبل تأكيد الموعد",
+    intro:
+      "يبدأ كل طلب بمراجعة مختصرة لطبيعة التصوير، والموقع، واستخدام الصور، وجدول التسليم. هذا يجعل صفحة الحجز مفيدة للعملاء الذين يقارنون بين تصوير الأعراس والفعاليات والأعمال التجارية والتحريرية في عمان قبل إرسال الطلب.",
+    items: [
+      {
+        title: "نطاق العمل والاستخدام",
+        body:
+          "نحدد أين ستستخدم الصور، وعدد الصور النهائية المطلوبة، وما إذا كان العمل خاصا أو تحريريا أو تجاريا أو مرتبطا بحملة. يتم توضيح حقوق الاستخدام والخصوصية وتوقيت النشر قبل بدء الإنتاج.",
+      },
+      {
+        title: "تخطيط الإنتاج",
+        body:
+          "في الأعراس والفعاليات نراجع الجدول الزمني، وإمكانية الوصول، وأولويات العائلة أو الضيوف، وظروف الإضاءة. وفي الأعمال التجارية نحدد قائمة اللقطات، والمنتجات، وقواعد الموقع، ومتطلبات السلامة، والمراجع البصرية للعلامة.",
+      },
+      {
+        title: "توقعات التسليم",
+        body:
+          "يتضمن العرض النهائي وقت التصوير، ومدة التحرير المتوقعة، وصيغة التسليم، وأفضل طريقة للتواصل حول الموافقات. وإذا كان الطلب يحتاج إلى تسليم أسرع، تتم مناقشة ذلك قبل تثبيت الموعد.",
+      },
+    ],
+  },
+} as const;
+
 export async function generateMetadata({
   params,
 }: {
@@ -63,11 +110,6 @@ export default async function BookPage({
       ? "أرسل الطلب عبر نموذج التواصل، أو راسلنا مباشرة."
       : "Send a request through the contact form, or reach us directly.");
 
-  const routeNote =
-    locale === "ar"
-      ? "صفحة book مخصصة لتجميع روابط الحجز والمتابعة."
-      : "This book page routes enquiries into the main contact flow.";
-
   return (
     <div className="editorial-section py-20 md:py-28 lg:py-32">
       <PageHeroIntro locale={locale} hero={pageHero} className="">
@@ -108,8 +150,24 @@ export default async function BookPage({
             >
               {locale === "ar" ? "انتقل إلى التواصل" : "Go to contact"}
             </Link>
-            <p className="max-w-xl text-sm font-light text-ink-muted">{routeNote}</p>
           </div>
+
+          <section className="mt-16 max-w-4xl border-t border-line/50 pt-12 md:mt-20 md:pt-16">
+            <p className="text-[10px] uppercase tracking-[0.34em] text-muted">
+              {bookGuidance[locale].heading}
+            </p>
+            <p className="mt-7 max-w-3xl text-sm font-light leading-[1.9] text-ink-muted md:text-[0.9375rem]">
+              {bookGuidance[locale].intro}
+            </p>
+            <div className="mt-10 grid gap-8 md:grid-cols-3">
+              {bookGuidance[locale].items.map((item) => (
+                <section key={item.title} className="border-t border-line/40 pt-6">
+                  <h2 className="font-display text-lg font-medium text-ink-bright">{item.title}</h2>
+                  <p className="mt-4 text-sm font-light leading-[1.85] text-ink-muted">{item.body}</p>
+                </section>
+              ))}
+            </div>
+          </section>
         </article>
       </PageHeroIntro>
     </div>

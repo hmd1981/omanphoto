@@ -11,10 +11,20 @@
   --line: #181816;
   --line-bright: #252523;
   --ease-editorial: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-luxury: cubic-bezier(0.19, 1, 0.22, 1);
+  --leading-display: 1.14;
+  --leading-body: 1.78;
+  --tracking-kicker: 0.26em;
+  --tracking-nav: 0.22em;
 }
 
 html[dir="rtl"] {
-  /* No RTL-specific overrides needed without ambient effects */
+  --leading-display: 1.26;
+  --leading-body: 1.82;
+  --tracking-kicker: 0.04em;
+  --tracking-nav: 0.06em;
+  --arabic-body: 1.0625rem;
+  --arabic-body-mobile: 1.125rem;
 }
 
 @theme inline {
@@ -27,7 +37,7 @@ html[dir="rtl"] {
   --color-surface: var(--surface);
   --color-line: var(--line);
   --font-serif: var(--font-cormorant);
-  --font-sans: var(--font-dm-sans);
+  --font-sans: var(--font-sans-en);
 }
 
 html {
@@ -37,24 +47,296 @@ html {
 body {
   background: var(--paper);
   color: var(--ink);
-  font-family: var(--font-dm-sans), system-ui, sans-serif;
+  font-family: var(--font-sans-en), system-ui, sans-serif;
+  font-weight: 300;
+  font-size: 1rem;
+  line-height: var(--leading-body);
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
-}
-
-html[dir="rtl"] body {
-  font-family: var(--font-noto-arabic), var(--font-dm-sans), system-ui, sans-serif;
-  font-feature-settings: "kern" 1;
-  letter-spacing: normal;
-}
-
-.font-display {
-  font-family: var(--font-cormorant), ui-serif, Georgia, serif;
   font-feature-settings: "kern" 1, "liga" 1;
 }
 
+html[dir="rtl"] body {
+  font-family: var(--font-sans-ar), var(--font-sans-en), system-ui, sans-serif;
+  font-size: var(--arabic-body);
+}
+
+@media (max-width: 767px) {
+  html[dir="rtl"] body {
+    font-size: var(--arabic-body-mobile);
+  }
+}
+
+/* ——— Display serif (headings) ——— */
+.font-display {
+  font-family: var(--font-cormorant), ui-serif, Georgia, serif;
+  font-weight: 300;
+  font-feature-settings: "kern" 1, "liga" 1, "onum" 1;
+  letter-spacing: 0.012em;
+  line-height: var(--leading-display);
+}
+
 html[dir="rtl"] .font-display {
-  font-family: var(--font-noto-arabic), var(--font-cormorant), ui-serif, Georgia, serif;
+  font-family: var(--font-display-ar), var(--font-cormorant), ui-serif, Georgia, serif;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+h1.font-display,
+h2.font-display,
+h3.font-display {
+  font-weight: 300;
+  letter-spacing: 0.01em;
+}
+
+html[dir="rtl"] h1.font-display,
+html[dir="rtl"] h2.font-display,
+html[dir="rtl"] h3.font-display {
+  font-weight: 400;
+}
+
+/* ——— Editorial UI utilities ——— */
+.editorial-kicker {
+  font-family: inherit;
+  font-size: 0.6875rem;
+  font-weight: 400;
+  letter-spacing: var(--tracking-kicker);
+  line-height: 1.5;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+html[dir="rtl"] .editorial-kicker {
+  font-size: 0.8125rem;
+  letter-spacing: var(--tracking-kicker);
+  text-transform: none;
+}
+
+.nav-editorial {
+  font-family: inherit;
+  font-size: 0.6875rem;
+  font-weight: 400;
+  letter-spacing: var(--tracking-nav);
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+html[dir="rtl"] .nav-editorial {
+  font-size: 0.75rem;
+  letter-spacing: var(--tracking-nav);
+  text-transform: none;
+}
+
+.cta-editorial {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid rgb(222 218 208 / 0.38);
+  background: rgb(5 5 5 / 0.15);
+  padding: 0.9375rem 2.125rem;
+  font-family: inherit;
+  font-size: 0.6875rem;
+  font-weight: 400;
+  letter-spacing: 0.24em;
+  line-height: 1;
+  text-transform: uppercase;
+  color: var(--ink-bright);
+  backdrop-filter: blur(2px);
+  transition:
+    background-color 0.65s var(--ease-luxury),
+    border-color 0.65s var(--ease-luxury),
+    color 0.65s var(--ease-luxury);
+}
+
+.cta-editorial:hover {
+  border-color: rgb(222 218 208 / 0.62);
+  background: rgb(222 218 208 / 0.07);
+  color: var(--ink-bright);
+}
+
+html[dir="rtl"] .cta-editorial {
+  font-size: 0.8125rem;
+  letter-spacing: 0.03em;
+  text-transform: none;
+  padding: 0.9375rem 1.875rem;
+}
+
+/* ——— Home hero (English) ——— */
+.home-hero-title {
+  font-size: clamp(1.625rem, 4.2vw, 3.375rem);
+  font-weight: 300;
+  line-height: 1.12;
+  color: var(--ink-bright);
+}
+
+.home-hero .hero-subline {
+  max-width: 100%;
+  font-size: 0.875rem;
+  font-weight: 300;
+  line-height: 1.8;
+  color: rgb(200 195 184 / 0.92);
+}
+
+@media (min-width: 768px) {
+  .home-hero .hero-subline {
+    font-size: 0.9375rem;
+  }
+}
+
+.home-hero-copy {
+  text-align: start;
+}
+
+/* ——— Home hero (English) ——— */
+.home-hero-copyplate--en {
+  padding-bottom: 6rem;
+}
+
+@media (min-width: 768px) {
+  .home-hero-copyplate--en {
+    padding-bottom: 9rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .home-hero-copyplate--en {
+    padding-bottom: 10rem;
+  }
+}
+
+.home-hero-en-rail {
+  justify-self: start;
+}
+
+.home-hero-copy--en {
+  width: 100%;
+  max-width: 14.5rem;
+  text-align: left;
+}
+
+@media (min-width: 640px) {
+  .home-hero-copy--en {
+    max-width: 15.5rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .home-hero-copy--en {
+    max-width: 16.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .home-hero-copy--en {
+    max-width: 17.5rem;
+  }
+}
+
+/* ——— Home hero (Arabic — mirrored English) ——— */
+.home-hero-copyplate--ar {
+  padding-bottom: 6rem;
+}
+
+@media (min-width: 768px) {
+  .home-hero-copyplate--ar {
+    padding-bottom: 9rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .home-hero-copyplate--ar {
+    padding-bottom: 10rem;
+  }
+}
+
+.home-hero-ar-rail {
+  justify-self: end;
+}
+
+.home-hero-copy--ar {
+  width: 100%;
+  max-width: 14.5rem;
+  text-align: right;
+}
+
+@media (min-width: 640px) {
+  .home-hero-copy--ar {
+    max-width: 15.5rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .home-hero-copy--ar {
+    max-width: 16.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .home-hero-copy--ar {
+    max-width: 17.5rem;
+  }
+}
+
+.home-hero-copy--ar .home-hero-title.font-display {
+  font-family: var(--font-hero-ar), serif;
+  font-weight: 400;
+}
+
+.home-hero-copy--ar :is(.editorial-kicker, .hero-subline, .cta-editorial) {
+  font-family: var(--font-hero-ui-ar), system-ui, sans-serif;
+}
+
+.home-hero-copy--ar .editorial-kicker {
+  text-transform: none;
+  letter-spacing: 0.04em;
+}
+
+.home-hero-copy--ar .cta-editorial {
+  text-transform: none;
+  letter-spacing: 0.03em;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .home-hero-copy {
+    opacity: 0;
+    animation: hero-copy-in 1.35s var(--ease-luxury) forwards;
+    animation-delay: 0.12s;
+  }
+}
+
+@keyframes hero-copy-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-hero-copy {
+    opacity: 1;
+    animation: none;
+  }
+}
+
+/* Arabic kickers site-wide */
+html[dir="rtl"] :where(p, span, a, h2, li, summary, nav, label).uppercase {
+  text-transform: none;
+  letter-spacing: 0.04em;
+}
+
+html[dir="rtl"] .editorial-prose {
+  font-size: 1.0625rem;
+  line-height: 1.88;
+}
+
+@media (max-width: 767px) {
+  html[dir="rtl"] .editorial-prose {
+    font-size: 1.125rem;
+  }
 }
 
 .editorial-section {
@@ -63,6 +345,8 @@ html[dir="rtl"] .font-display {
 
 .editorial-prose {
   @apply max-w-[52ch] text-ink-muted;
+  font-weight: 300;
+  line-height: var(--leading-body);
 }
 
 ::selection {
@@ -75,7 +359,7 @@ html[dir="rtl"] .font-display {
   outline-offset: 4px;
 }
 
-/* Site header brand lockup — subtle first-paint + hover (respects reduced motion) */
+/* Site header brand lockup */
 @keyframes brand-monogram-in {
   from {
     opacity: 0;
@@ -90,12 +374,12 @@ html[dir="rtl"] .font-display {
 @keyframes brand-word-in {
   from {
     opacity: 0;
-    letter-spacing: 0.36em;
+    letter-spacing: 0.32em;
     transform: translateY(2px);
   }
   to {
     opacity: 1;
-    letter-spacing: var(--brand-track-end, 0.2em);
+    letter-spacing: var(--brand-track-end, 0.16em);
     transform: translateY(0);
   }
 }
@@ -123,7 +407,7 @@ html[dir="rtl"] .font-display {
 
   .brand-lockup-word {
     opacity: 0;
-    animation: brand-word-in 0.95s var(--ease-editorial) forwards;
+    animation: brand-word-in 1.05s var(--ease-luxury) forwards;
     animation-delay: 0.08s;
   }
 
