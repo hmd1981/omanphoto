@@ -1,4 +1,4 @@
-import type { Category, HeroSettings, Media, PageContent, Service, SiteSettings } from "@prisma/client";
+import type { Category, HeroSettings, Media, PageContent, Service, SiteSettings } from "@/lib/generated/prisma/browser";
 
 export type Locale = "en" | "ar";
 

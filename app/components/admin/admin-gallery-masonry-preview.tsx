@@ -1,8 +1,8 @@
 "use client";
 
-import type { Category } from "@prisma/client";
-import type { Media } from "@prisma/client";
-import { MediaType } from "@prisma/client";
+import type { Category } from "@/lib/generated/prisma/browser";
+import type { Media } from "@/lib/generated/prisma/browser";
+import { MediaType } from "@/lib/generated/prisma/browser";
 import type { PreviewViewport } from "@/components/admin/admin-preview-frame";
 import { isExternalUrl, resolveMediaSrc } from "@/lib/media-url";
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { MediaType } from "@prisma/client";
+import { MediaType } from "@/lib/generated/prisma/browser";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { AdminGalleryMasonryPreview } from "@/components/admin/admin-gallery-masonry-preview";
 import { AdminPreviewFrame } from "@/components/admin/admin-preview-frame";

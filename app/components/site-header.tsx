@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { SiteSettings } from "@prisma/client";
+import type { SiteSettings } from "@/lib/generated/prisma/browser";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import type { Locale } from "@/lib/locale";
 import { localizedPath, pickTextWithOptionalFallback, siteBrandDisplay } from "@/lib/locale";

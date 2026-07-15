@@ -1,5 +1,5 @@
 import Image from "next/image";
-import type { PageHeroMedia, Media } from "@prisma/client";
+import type { PageHeroMedia, Media } from "@/lib/generated/prisma/browser";
 import { resolvePageHeroVisual, isExternalUrl } from "@/lib/page-hero-visual";
 import type { Locale } from "@/lib/locale";
 

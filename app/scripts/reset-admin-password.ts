@@ -5,10 +5,10 @@
  *
  * Optional: ADMIN_EMAIL=you@example.com (default admin@omanphoto.com)
  */
-import { PrismaClient } from "@prisma/client";
-import bcrypt from "bcryptjs";
 
-const prisma = new PrismaClient();
+import bcrypt from "bcryptjs";
+import { prisma } from "../lib/prisma";
+
 
 async function main() {
   const email = (process.env.ADMIN_EMAIL ?? "admin@omanphoto.com").trim().toLowerCase();

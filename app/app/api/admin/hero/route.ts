@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { MediaType } from "@prisma/client";
+import { MediaType } from "@/lib/generated/prisma/client";
 import { requireAdminUser } from "@/lib/admin-api";
 import { prisma } from "@/lib/prisma";
 import { revalidatePublicPages } from "@/lib/revalidate-public";
 
 const patchSchema = z.object({
-  mediaType: z.nativeEnum(MediaType).optional(),
+  mediaType: z.enum(MediaType).optional(),
   imageMediaId: z.string().nullable().optional(),
   videoMediaId: z.string().nullable().optional(),
   videoUrl: z.string().nullable().optional(),

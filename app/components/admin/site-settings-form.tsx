@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { SiteSettings } from "@prisma/client";
+import type { SiteSettings } from "@/lib/generated/prisma/browser";
 
 const inputCls = "mt-2 w-full border border-line bg-black px-3 py-2 text-sm";
 

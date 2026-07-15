@@ -1,4 +1,4 @@
-import { MediaType } from "@prisma/client";
+import { MediaType } from "@/lib/generated/prisma/browser";
 
 export type CreatedMediaItem = {
   id: string;

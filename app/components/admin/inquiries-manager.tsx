@@ -1,6 +1,6 @@
 "use client";
 
-import { InquiryStatus } from "@prisma/client";
+import { InquiryStatus } from "@/lib/generated/prisma/browser";
 import { useCallback, useEffect, useState } from "react";
 
 type Row = {

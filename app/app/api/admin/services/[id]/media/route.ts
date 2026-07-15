@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { MediaType } from "@prisma/client";
+import { MediaType } from "@/lib/generated/prisma/client";
 import { requireAdminUser } from "@/lib/admin-api";
 import { prisma } from "@/lib/prisma";
 import { revalidatePublicPages } from "@/lib/revalidate-public";

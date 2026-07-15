@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { MediaType, type Media } from "@prisma/client";
+import { MediaType, type Media } from "@/lib/generated/prisma/client";
 import { getPublishedServiceBySlug } from "@/lib/data";
 import { parseFaqBlocks } from "@/lib/faq";
 import { localizedPath, mediaTitle, pickText, serviceDescription, serviceTitle, type Locale } from "@/lib/locale";

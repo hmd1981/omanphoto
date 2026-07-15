@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import type { Prisma } from "@prisma/client";
-import { MediaType } from "@prisma/client";
+import type { Prisma } from "@/lib/generated/prisma/client";
+import { MediaType } from "@/lib/generated/prisma/client";
 import { requireAdminUser } from "@/lib/admin-api";
 import { prisma } from "@/lib/prisma";
 import { revalidatePublicPages } from "@/lib/revalidate-public";
@@ -10,7 +10,7 @@ const patchSchema = z.object({
   title: z.string().min(1).optional(),
   titleEn: z.string().min(1).optional(),
   titleAr: z.string().min(1).optional(),
-  type: z.nativeEnum(MediaType).optional(),
+  type: z.enum(MediaType).optional(),
   filePath: z.string().nullable().optional(),
   url: z.string().nullable().optional(),
   categoryId: z.string().nullable().optional(),

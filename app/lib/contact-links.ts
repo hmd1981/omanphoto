@@ -1,4 +1,4 @@
-import type { SiteSettings } from "@prisma/client";
+import type { SiteSettings } from "@/lib/generated/prisma/browser";
 
 /** Defaults when DB fields are unset (e.g. before seed/migration). */
 export const DEFAULT_CONTACT_LINKS = {

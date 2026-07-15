@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import type { Prisma } from "@prisma/client";
+import type { Prisma } from "@/lib/generated/prisma/client";
 import { requireAdminUser } from "@/lib/admin-api";
 import { prisma } from "@/lib/prisma";
 import { revalidatePublicPages } from "@/lib/revalidate-public";

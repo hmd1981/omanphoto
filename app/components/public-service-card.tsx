@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
-import type { Media, Service } from "@prisma/client";
-import { MediaType } from "@prisma/client";
+import type { Media, Service } from "@/lib/generated/prisma/browser";
+import { MediaType } from "@/lib/generated/prisma/browser";
 import { isExternalUrl, resolveMediaSrc } from "@/lib/media-url";
 import { localizedPath } from "@/lib/locale";
 import type { Locale } from "@/lib/locale";

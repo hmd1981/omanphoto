@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { MediaType } from "@prisma/client";
+import { MediaType } from "@/lib/generated/prisma/client";
 import { requireAdminUser } from "@/lib/admin-api";
 import { PAGE_HERO_USAGE_LABEL } from "@/lib/admin-media-usage-labels";
 import { prisma } from "@/lib/prisma";
@@ -10,7 +10,7 @@ const createSchema = z.object({
   title: z.string().min(1).optional(),
   titleEn: z.string().min(1).optional(),
   titleAr: z.string().min(1).optional(),
-  type: z.nativeEnum(MediaType),
+  type: z.enum(MediaType),
   filePath: z.string().nullable().optional(),
   url: z.string().nullable().optional(),
   categoryId: z.string().nullable().optional(),

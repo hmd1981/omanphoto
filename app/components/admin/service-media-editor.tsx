@@ -1,6 +1,6 @@
 "use client";
 
-import { MediaType, type Media } from "@prisma/client";
+import { MediaType, type Media } from "@/lib/generated/prisma/browser";
 import Image from "next/image";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { MediaPlacementPicker, type MediaPickItem } from "@/components/admin/media-placement-picker";

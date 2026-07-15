@@ -1,6 +1,6 @@
 "use client";
 
-import { MediaType, PageHeroPlacement, type PageHeroMedia, type Media } from "@prisma/client";
+import { MediaType, PageHeroPlacement, type PageHeroMedia, type Media } from "@/lib/generated/prisma/browser";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { AdminPreviewFrame } from "@/components/admin/admin-preview-frame";
 import { MediaPlacementPicker } from "@/components/admin/media-placement-picker";

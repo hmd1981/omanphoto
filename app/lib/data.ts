@@ -1,4 +1,4 @@
-import type { PageHeroPlacement, Prisma } from "@prisma/client";
+import type { PageHeroPlacement, Prisma } from "@/lib/generated/prisma/client";
 import { unstable_noStore as noStore } from "next/cache";
 import { prisma } from "./prisma";
 

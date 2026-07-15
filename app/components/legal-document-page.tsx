@@ -1,4 +1,4 @@
-import type { PageContent } from "@prisma/client";
+import type { PageContent } from "@/lib/generated/prisma/browser";
 import type { Locale } from "@/lib/locale";
 import { pickPageContent } from "@/lib/locale";
 

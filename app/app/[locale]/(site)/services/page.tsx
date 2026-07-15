@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { PageHeroIntro } from "@/components/page-hero-intro";
 import { PublicServiceCard } from "@/components/public-service-card";
 import { getPageHeroMedia, getPageSection, getPublishedServices } from "@/lib/data";
-import { PageHeroPlacement } from "@prisma/client";
+import { PageHeroPlacement } from "@/lib/generated/prisma/client";
 import { buildPageMetadata } from "@/lib/seo";
 import { pickPageContent, serviceDescription, serviceTitle } from "@/lib/locale";
 import type { Locale } from "@/lib/locale";

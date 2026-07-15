@@ -1,4 +1,4 @@
-import { PageHeroPlacement } from "@prisma/client";
+import { PageHeroPlacement } from "@/lib/generated/prisma/browser";
 
 /** Labels must match GET /api/admin/media usage enrichment. */
 export const PAGE_HERO_USAGE_LABEL: Record<PageHeroPlacement, string> = {

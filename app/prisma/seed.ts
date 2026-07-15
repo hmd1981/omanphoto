@@ -1,9 +1,9 @@
-import { PageHeroPlacement, PrismaClient, MediaType } from "@prisma/client";
+import { PageHeroPlacement, MediaType } from "@/lib/generated/prisma/client";
 import bcrypt from "bcryptjs";
 import { cmsBaselineExists, shouldPreserveCms } from "../lib/cms-baseline";
 import { journalPostSeeds, serviceExtendedContent, supplementalPageBits } from "./seed-content";
+import { prisma } from "../lib/prisma";
 
-const prisma = new PrismaClient();
 
 /** Google Maps embed (contact page iframe `src`) + “Open in Maps” link for the same place */
 const MAP_EMBED_URL =

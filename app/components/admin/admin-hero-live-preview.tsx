@@ -1,6 +1,6 @@
 "use client";
 
-import { MediaType } from "@prisma/client";
+import { MediaType } from "@/lib/generated/prisma/browser";
 import type { PreviewViewport } from "@/components/admin/admin-preview-frame";
 
 type Props = {

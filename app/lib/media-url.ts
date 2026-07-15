@@ -1,4 +1,4 @@
-import type { Media } from "@prisma/client";
+import type { Media } from "@/lib/generated/prisma/browser";
 
 export function resolveMediaSrc(m: Pick<Media, "type" | "filePath" | "url">): string {
   if (m.filePath) {

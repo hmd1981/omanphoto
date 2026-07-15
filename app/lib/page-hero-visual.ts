@@ -1,4 +1,4 @@
-import { MediaType, type Media } from "@prisma/client";
+import { MediaType, type Media } from "@/lib/generated/prisma/browser";
 import { isExternalUrl, resolveMediaSrc } from "@/lib/media-url";
 
 export type PageHeroVisual =

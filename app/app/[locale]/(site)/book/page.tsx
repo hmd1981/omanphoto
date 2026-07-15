@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PageHeroIntro } from "@/components/page-hero-intro";
 import { getPageHeroMedia, getPageSectionMap, getPublishedServices } from "@/lib/data";
-import { PageHeroPlacement } from "@prisma/client";
+import { PageHeroPlacement } from "@/lib/generated/prisma/client";
 import { buildPageMetadata } from "@/lib/seo";
 import { localizedPath, pickPageContent, pickTextWithOptionalFallback, serviceTitle } from "@/lib/locale";
 import type { Locale } from "@/lib/locale";

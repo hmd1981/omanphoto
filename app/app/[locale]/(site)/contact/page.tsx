@@ -5,7 +5,7 @@ import { PageHeroIntro } from "@/components/page-hero-intro";
 import { contactFormCopy, contactPageChromeCopy } from "@/lib/contact-messages";
 import { resolveContactLinks } from "@/lib/contact-links";
 import { getPageHeroMedia, getPageSectionMap, getPublishedServices, getSiteSettings } from "@/lib/data";
-import { PageHeroPlacement } from "@prisma/client";
+import { PageHeroPlacement } from "@/lib/generated/prisma/client";
 import { buildPageMetadata } from "@/lib/seo";
 import { pickPageContent, pickTextWithOptionalFallback, serviceTitle } from "@/lib/locale";
 import type { Locale } from "@/lib/locale";

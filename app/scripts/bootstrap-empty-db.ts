@@ -2,10 +2,10 @@
  * First boot on an empty database: restore cms-baseline.json + ensure admin user exists.
  */
 import bcrypt from "bcryptjs";
-import { PrismaClient } from "@prisma/client";
-import { cmsBaselineExists, importCmsBaseline, readCmsBaseline } from "../lib/cms-baseline";
 
-const prisma = new PrismaClient();
+import { cmsBaselineExists, importCmsBaseline, readCmsBaseline } from "../lib/cms-baseline";
+import { prisma } from "../lib/prisma";
+
 
 async function main() {
   if (!cmsBaselineExists()) {

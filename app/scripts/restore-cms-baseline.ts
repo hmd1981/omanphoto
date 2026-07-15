@@ -2,10 +2,10 @@
  * Restore CMS from prisma/cms-baseline.json (photos on disk are unchanged).
  * Run: cd app && npx tsx scripts/restore-cms-baseline.ts
  */
-import { PrismaClient } from "@prisma/client";
-import { cmsBaselineExists, importCmsBaseline, readCmsBaseline } from "../lib/cms-baseline";
 
-const prisma = new PrismaClient();
+import { cmsBaselineExists, importCmsBaseline, readCmsBaseline } from "../lib/cms-baseline";
+import { prisma } from "../lib/prisma";
+
 
 async function main() {
   if (!cmsBaselineExists()) {

@@ -1,6 +1,6 @@
 "use client";
 
-import { MediaType } from "@prisma/client";
+import { MediaType } from "@/lib/generated/prisma/browser";
 import { useCallback, useMemo, useState } from "react";
 import { createMediaFromExternalUrl, uploadFileAndCreateMedia } from "@/lib/admin-media-client";
 import { isExternalUrl, resolveMediaSrc } from "@/lib/media-url";

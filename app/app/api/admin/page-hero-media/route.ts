@@ -1,18 +1,18 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { MediaType, PageHeroPlacement } from "@prisma/client";
+import { MediaType, PageHeroPlacement } from "@/lib/generated/prisma/client";
 import { requireAdminUser } from "@/lib/admin-api";
 import { prisma } from "@/lib/prisma";
 import { revalidatePublicPages } from "@/lib/revalidate-public";
 
-const placementEnum = z.nativeEnum(PageHeroPlacement);
+const placementEnum = z.enum(PageHeroPlacement);
 
 const patchBody = z
   .object({
     placement: placementEnum,
     active: z.boolean().optional(),
     sortOrder: z.number().int().min(0).max(999).optional(),
-    mediaType: z.nativeEnum(MediaType).optional(),
+    mediaType: z.enum(MediaType).optional(),
     imageMediaId: z.string().nullable().optional(),
     videoMediaId: z.string().nullable().optional(),
     videoUrl: z.string().nullable().optional(),

@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
-import type { HeroSettings, Media, SiteSettings } from "@prisma/client";
-import { MediaType } from "@prisma/client";
+import type { HeroSettings, Media, SiteSettings } from "@/lib/generated/prisma/browser";
+import { MediaType } from "@/lib/generated/prisma/browser";
 import { heroCopy } from "@/lib/locale";
 import type { Locale } from "@/lib/locale";
 import { isExternalUrl, resolveMediaSrc } from "@/lib/media-url";

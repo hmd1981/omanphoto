@@ -1,10 +1,10 @@
+import { prisma } from "../lib/prisma";
 /**
  * One-off restore: undo destructive db:seed effects on production CMS data.
  * Run: cd app && npx tsx scripts/restore-after-seed.ts
  */
-import { PrismaClient } from "@prisma/client";
 
-const prisma = new PrismaClient();
+
 
 const DEMO_TITLES = new Set([
   "Coastal ceremony",

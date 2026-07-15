@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import type { User } from "@prisma/client";
+import type { User } from "@/lib/generated/prisma/client";
 import { getSessionFromCookies } from "./auth";
 import { prisma } from "./prisma";
 

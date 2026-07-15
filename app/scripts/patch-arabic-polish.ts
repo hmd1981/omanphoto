@@ -1,10 +1,10 @@
+import { prisma } from "../lib/prisma";
 /**
  * Gulf Arabic copy + media title fixes for production CMS.
  * Safe to re-run; only updates known stale strings.
  */
-import { PrismaClient } from "@prisma/client";
 
-const prisma = new PrismaClient();
+
 
 const MEDIA_TITLE_MAP: Record<string, string> = {
   Portrait: "بورتريه",

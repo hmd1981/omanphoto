@@ -1,4 +1,4 @@
-import type { JournalPost, Media } from "@prisma/client";
+import type { JournalPost, Media } from "@/lib/generated/prisma/browser";
 import type { Locale } from "./locale";
 import { pickText } from "./locale";
 

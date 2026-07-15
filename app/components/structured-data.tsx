@@ -1,4 +1,4 @@
-import type { SiteSettings } from "@prisma/client";
+import type { SiteSettings } from "@/lib/generated/prisma/browser";
 import { resolveContactLinks } from "@/lib/contact-links";
 
 type Props = {

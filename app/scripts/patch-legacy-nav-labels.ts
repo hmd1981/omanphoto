@@ -1,10 +1,10 @@
+import { prisma } from "../lib/prisma";
 /**
  * One-time style fix: nav labels were stored in DB as "Work" / "الأعمال".
  * Deploying new app code does not rewrite SiteSettings — patch on container start.
  */
-import { PrismaClient } from "@prisma/client";
 
-const prisma = new PrismaClient();
+
 
 async function main() {
   const s = await prisma.siteSettings.findUnique({ where: { id: "singleton" } });

@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { PageHeroIntro } from "@/components/page-hero-intro";
 import { PortfolioMasonry } from "@/components/portfolio-masonry";
 import { getPageHeroMedia, getPageSection, getPortfolioMedia, getPublishedCategories } from "@/lib/data";
-import { PageHeroPlacement } from "@prisma/client";
+import { PageHeroPlacement } from "@/lib/generated/prisma/client";
 import { buildPageMetadata } from "@/lib/seo";
 import { categoryLabel, localizedPath, pickPageContent } from "@/lib/locale";
 import type { Locale } from "@/lib/locale";

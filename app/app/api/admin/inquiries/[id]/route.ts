@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { InquiryStatus } from "@prisma/client";
+import { InquiryStatus } from "@/lib/generated/prisma/client";
 import { requireAdminUser } from "@/lib/admin-api";
 import { prisma } from "@/lib/prisma";
 
 const patchSchema = z
   .object({
-    status: z.nativeEnum(InquiryStatus),
+    status: z.enum(InquiryStatus),
   })
   .strict();
 

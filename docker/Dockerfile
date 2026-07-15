@@ -8,6 +8,7 @@ ARG DATABASE_URL_BUILD=postgresql://omanphoto:omanphoto_dev@127.0.0.1:5432/omanp
 ENV DATABASE_URL=$DATABASE_URL_BUILD
 COPY package.json ./
 COPY app/package.json app/package-lock.json ./app/
+COPY app/prisma.config.ts ./app/prisma.config.ts
 COPY server/prisma ./server/prisma
 COPY scripts ./scripts
 WORKDIR /opt/omanphoto/app

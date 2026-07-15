@@ -10,8 +10,8 @@ import type {
   Service,
   ServiceMedia,
   SiteSettings,
-} from "@prisma/client";
-import { PrismaClient } from "@prisma/client";
+} from "@/lib/generated/prisma/client";
+import { PrismaClient } from "@/lib/generated/prisma/client";
 
 export const CMS_BASELINE_VERSION = 1;
 export const CMS_BASELINE_REL = "prisma/cms-baseline.json";
